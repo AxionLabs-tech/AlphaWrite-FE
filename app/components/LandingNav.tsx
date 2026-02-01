@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Zap, Menu, X } from "lucide-react";
 import AuthModal from "./AuthModal";
+import Image from "next/image";
+
 
 const navLinks = [
   { href: "/blog", label: "Blog" },
@@ -37,10 +39,15 @@ export default function LandingNav() {
             href="/"
             className="flex shrink-0 items-center gap-2.5 text-xl font-bold text-slate-900 transition hover:text-[#8B5CF6]"
           >
-            <span className="flex size-9 items-center justify-center rounded-xl bg-[#8B5CF6] text-white shadow-sm">
-              <Zap className="size-5" aria-hidden />
+            <span className="items-center justify-center   ">
+              <Image
+              alt="logo"
+              src="/alphawrite.png"
+              width={145}
+              height={100}
+              />
             </span>
-            <span className="hidden sm:inline">AlphaWrite</span>
+            {/* <span className="hidden sm:inline ">AlphaWrite</span> */}
           </Link>
 
           {/* Desktop nav */}
@@ -81,12 +88,15 @@ export default function LandingNav() {
               >
                 Login
               </button>
-              <Link
-                href="/#humanizer"
+              <button
+                onClick={() => {
+                  setMobileOpen(false)
+                  setAuthOpen(true)
+                }}
                 className="rounded-xl bg-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-600 hover:shadow-violet-500/30"
               >
                 Try for free
-              </Link>
+              </button>
             </div>
           </nav>
 

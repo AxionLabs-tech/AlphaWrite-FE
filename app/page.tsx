@@ -23,7 +23,7 @@ export default function Home() {
         <HowItWorks />
         <SeeTheDifference />
         <Features />
-        <CTABlock />
+        {/* <CTABlock /> */}
         <Testimonials />
         <Trust />
         <LandingPricing />
