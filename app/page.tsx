@@ -11,6 +11,7 @@ import Trust from "./components/Trust";
 import LandingPricing from "./components/LandingPricing";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
+import TrustedByUniversities from "./components/Trusted";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
         <SeeTheDifference />
         <Features />
         {/* <CTABlock /> */}
+        <TrustedByUniversities/>
         <Testimonials />
         <Trust />
         <LandingPricing />
