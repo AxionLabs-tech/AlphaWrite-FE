@@ -7,6 +7,17 @@ export default function HeroSection() {
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 lg:items-center">
           <div className="text-center lg:text-left">
+            {/* Chip: directly above hero text */}
+            <div className="mb-6 flex justify-center lg:justify-start">
+              <span
+                className="inline-flex items-center gap-2 rounded-full border border-[#E0E7FF] bg-[#F7F8FC] px-4 py-2.5 text-sm font-normal text-slate-700"
+                role="status"
+                aria-label="50,000+ writers writing smarter, sounding human"
+              >
+                <span className="h-2 w-2 shrink-0 rounded-full bg-[#6EE7B7]" aria-hidden />
+                50,000+ writers. Smarter. More human.
+              </span>
+            </div>
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
               Write Smarter. Sound Human.
             </h1>

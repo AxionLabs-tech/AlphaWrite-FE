@@ -20,12 +20,12 @@ export default function Home() {
       <main>
         <HeroSection />
         <HumanizerDetectorSection />
+        <TrustedByUniversities />
         <Challenges />
         <HowItWorks />
         <SeeTheDifference />
         <Features />
         {/* <CTABlock /> */}
-        <TrustedByUniversities/>
         <Testimonials />
         <Trust />
         <LandingPricing />

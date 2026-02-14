@@ -39,12 +39,12 @@ export default function LandingNav() {
             href="/"
             className="flex shrink-0 items-center gap-2.5 text-xl font-bold text-slate-900 transition hover:text-[#8B5CF6]"
           >
-            <span className="items-center justify-center   ">
+            <span className="items-center justify-center mb-6">
               <Image
               alt="logo"
               src="/alphawrite.png"
-              width={145}
-              height={100}
+              width={160}
+              height={120}
               />
             </span>
             {/* <span className="hidden sm:inline ">AlphaWrite</span> */}
