@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
+import { useRequestLogin } from "@/services/hooks";
 
 interface AuthModalProps {
   open: boolean;
@@ -11,22 +12,27 @@ interface AuthModalProps {
 export default function AuthModal({ open, onClose }: AuthModalProps) {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { requestLogin, isLoading, error, resetError } = useRequestLogin();
+
+  useEffect(() => {
+    if (!open) resetError();
+  }, [open, resetError]);
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    setLoading(true);
-    // TODO: call your auth API to send magic link
-    await new Promise((r) => setTimeout(r, 800));
-    setSent(true);
-    setLoading(false);
+    try {
+      await requestLogin({ email });
+      setSent(true);
+    } catch {
+      // error is set by useRequestLogin
+    }
   };
 
   const handleGoogle = () => {
-    // TODO: redirect to Google OAuth or call your auth API
+    // Google auth not ready yet
     onClose();
-    window.location.href = "/#humanizer"; // redirect to tool on landing
+    window.location.href = "/#humanizer";
   };
 
   const handleCancel = () => {
@@ -104,6 +110,11 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
           </div>
         </div>
 
+        {error && (
+          <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
         {sent ? (
           <div className="rounded-xl bg-violet-50 p-4 text-center text-sm text-[#8B5CF6]">
             Check your inbox — we sent you a magic link to sign in.
@@ -124,10 +135,10 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
             />
             <button
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#8B5CF6] py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:bg-violet-600 disabled:opacity-70"
             >
-              {loading ? (
+              {isLoading ? (
                 <Loader2 className="size-5 animate-spin" aria-hidden />
               ) : (
                 "Get Magic Link"
