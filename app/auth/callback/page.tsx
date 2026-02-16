@@ -1,10 +1,18 @@
 "use client";
 
+/**
+ * Handles magic link (?token=...) and Google OAuth (?code=...&state=...) callbacks.
+ * For local dev, set the Google OAuth redirect URI to: http://localhost:3000/auth/callback
+ */
+
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/services/hooks";
 import { authApi } from "@/services/modules/auth";
 import { Loader2 } from "lucide-react";
+
+const OAUTH_STATE_KEY = "alphawrite_oauth_state";
+const OAUTH_CODE_VERIFIER_KEY = "alphawrite_oauth_code_verifier";
 
 function CallbackContent() {
   const router = useRouter();
@@ -15,6 +23,44 @@ function CallbackContent() {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+
+    // Google OAuth callback
+    if (code) {
+      let cancelled = false;
+      const code_verifier =
+        typeof window !== "undefined" ? sessionStorage.getItem(OAUTH_CODE_VERIFIER_KEY) : null;
+      if (!code_verifier) {
+        setStatus("error");
+        setMessage("Missing session. Please try signing in with Google again.");
+        return;
+      }
+      authApi
+        .getAuthCallback({ code, state: state ?? undefined, code_verifier })
+        .then((data) => {
+          if (cancelled) return;
+          try {
+            sessionStorage.removeItem(OAUTH_STATE_KEY);
+            sessionStorage.removeItem(OAUTH_CODE_VERIFIER_KEY);
+          } catch {
+            // ignore
+          }
+          setSession(data);
+          setStatus("success");
+          router.replace("/");
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setStatus("error");
+          setMessage("Google sign-in failed. Please try again.");
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    // Magic link callback
     if (!token) {
       setStatus("error");
       setMessage("Missing login token.");

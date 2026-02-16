@@ -10,7 +10,7 @@ import {
 } from "react";
 import Cookies from "js-cookie";
 import type { User } from "@/services/dtos";
-import type { AuthUser, LoginResponse } from "@/services/dtos/auth";
+import type { AuthUser, LoginResponse, AuthCallbackResponse } from "@/services/dtos/auth";
 import type { RefreshResponse } from "@/services/dtos/auth";
 import type { PaymentSuccessResponse } from "@/services/dtos/billing";
 import { setTokenGetter } from "@/services/apiClient";
@@ -72,7 +72,7 @@ interface AuthState {
 }
 
 interface AuthContextValue extends AuthState {
-  setSession: (data: LoginResponse | RefreshResponse | PaymentSuccessResponse) => void;
+  setSession: (data: LoginResponse | RefreshResponse | PaymentSuccessResponse | AuthCallbackResponse) => void;
   signIn: (email: string) => Promise<void>;
   signInWithGoogle: () => void;
   signOut: () => Promise<void>;
@@ -184,7 +184,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshSession();
   }, [refreshSession]);
 
-  const setSession = useCallback((data: LoginResponse | RefreshResponse | PaymentSuccessResponse) => {
+  const setSession = useCallback((data: LoginResponse | RefreshResponse | PaymentSuccessResponse | AuthCallbackResponse) => {
     setState({
       user: authUserToUser(data.user as AuthUser),
       accessToken: data.access_token,
@@ -204,10 +204,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     await Promise.resolve();
   }, []);
 
-  const signInWithGoogle = useCallback(() => {
-    // Google auth not ready yet
-    if (typeof window !== "undefined") {
-      window.location.href = "/#humanizer";
+  const signInWithGoogle = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    try {
+      const { url, state, code_verifier } = await authApi.getGoogleAuthUrl();
+      try {
+        sessionStorage.setItem("alphawrite_oauth_state", state);
+        sessionStorage.setItem("alphawrite_oauth_code_verifier", code_verifier);
+      } catch {
+        // sessionStorage unavailable
+      }
+      window.location.href = url;
+    } catch {
+      // Error surfaced if using useGoogleAuth in UI
     }
   }, []);
 

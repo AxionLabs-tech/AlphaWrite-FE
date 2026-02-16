@@ -67,7 +67,13 @@ export function useGoogleAuth(): UseGoogleAuthResult {
     setIsLoading(true);
     setError(null);
     try {
-      const { url } = await authApi.getGoogleAuthUrl();
+      const { url, state, code_verifier } = await authApi.getGoogleAuthUrl();
+      try {
+        sessionStorage.setItem("alphawrite_oauth_state", state);
+        sessionStorage.setItem("alphawrite_oauth_code_verifier", code_verifier);
+      } catch {
+        // sessionStorage full or private mode
+      }
       window.location.href = url;
     } catch (e) {
       setError(getErrorMessage(e, "Failed to start Google sign-in"));
