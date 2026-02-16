@@ -34,6 +34,7 @@ export type {
   LoginResponse,
   GoogleAuthResponse,
   AuthCallbackResponse,
+  RefreshRequestBody,
   RefreshResponse,
   LogoutResponse,
   ApiDetailError,
@@ -47,3 +48,16 @@ export type {
   ParaphraseBody,
   ParaphraseResponse,
 } from "./ai";
+
+// Billing DTOs (create-checkout-session, check-subscription, payment-success, subscription-status, cancel, reactivate)
+export type {
+  CreateCheckoutSessionResponse,
+  CheckSubscriptionResponse,
+  PaymentSuccessBody,
+  PaymentSuccessResponse,
+  PaymentSuccessUser,
+  SubscriptionStatusResponse,
+  CancelSubscriptionBody,
+  CancelSubscriptionResponse,
+  ReactivateSubscriptionResponse,
+} from "./billing";

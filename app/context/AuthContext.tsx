@@ -12,6 +12,7 @@ import Cookies from "js-cookie";
 import type { User } from "@/services/dtos";
 import type { AuthUser, LoginResponse } from "@/services/dtos/auth";
 import type { RefreshResponse } from "@/services/dtos/auth";
+import type { PaymentSuccessResponse } from "@/services/dtos/billing";
 import { setTokenGetter } from "@/services/apiClient";
 import { authApi } from "@/services/modules/auth";
 
@@ -66,10 +67,12 @@ interface AuthState {
   accessToken: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  /** True after the first refreshSession() has completed (success or fail). Prevents API calls with stale token before refresh. */
+  initialRefreshDone: boolean;
 }
 
 interface AuthContextValue extends AuthState {
-  setSession: (data: LoginResponse | RefreshResponse) => void;
+  setSession: (data: LoginResponse | RefreshResponse | PaymentSuccessResponse) => void;
   signIn: (email: string) => Promise<void>;
   signInWithGoogle: () => void;
   signOut: () => Promise<void>;
@@ -88,6 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     accessToken: null,
     isLoading: true,
     isAuthenticated: false,
+    initialRefreshDone: false,
   });
 
   // Let apiClient send Bearer token on requests
@@ -96,8 +100,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [state.accessToken]);
 
   const refreshSession = useCallback(async () => {
+    const markRefreshDone = (patch: Partial<AuthState>) => {
+      setState((prev) => ({ ...prev, ...patch, initialRefreshDone: true }));
+    };
+
     if (typeof window === "undefined") {
-      setState({ user: null, accessToken: null, isLoading: false, isAuthenticated: false });
+      setState({ user: null, accessToken: null, isLoading: false, isAuthenticated: false, initialRefreshDone: true });
       return;
     }
 
@@ -114,8 +122,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     if (refreshToken) {
       try {
-        const data = await authApi.refreshToken();
-        setState({
+        const data = await authApi.refreshToken({ refresh_token: refreshToken });
+        markRefreshDone({
           user: authUserToUser(data.user),
           accessToken: data.access_token,
           isLoading: false,
@@ -132,12 +140,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
 
-    // 2) Restore from cookies (token + email)
+    // 2) Restore from cookies (token + email) – token may be expired; do NOT set initialRefreshDone
+    //    so subscription-status and other auth APIs are not called with a stale token
     const token = Cookies.get("alphawriteToken");
     const email = Cookies.get("alphawriteEmail");
     const userId = Cookies.get("alphawriteUserId");
     if (token && email) {
-      setState({
+      setState((prev) => ({
+        ...prev,
         user: {
           id: userId ?? "",
           email,
@@ -148,40 +158,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
         accessToken: token,
         isLoading: false,
         isAuthenticated: true,
-      });
+        initialRefreshDone: false,
+      }));
       return;
     }
 
-    // 3) Restore from localStorage (works when cookies are blocked)
+    // 3) Restore from localStorage (works when cookies are blocked) – same as 2, no initialRefreshDone
     if (stored?.access_token && stored?.user?.email) {
-      setState({
-        user: authUserToUser(stored.user),
-        accessToken: stored.access_token,
+      setSessionCookies(stored);
+      setState((prev) => ({
+        ...prev,
+        user: authUserToUser(stored!.user),
+        accessToken: stored!.access_token,
         isLoading: false,
         isAuthenticated: true,
-      });
-      setSessionCookies(stored);
+        initialRefreshDone: false,
+      }));
       return;
     }
 
-    setState({ user: null, accessToken: null, isLoading: false, isAuthenticated: false });
+    markRefreshDone({ user: null, accessToken: null, isLoading: false, isAuthenticated: false });
   }, []);
 
   useEffect(() => {
     refreshSession();
   }, [refreshSession]);
 
-  const setSession = useCallback((data: LoginResponse | RefreshResponse) => {
+  const setSession = useCallback((data: LoginResponse | RefreshResponse | PaymentSuccessResponse) => {
     setState({
-      user: authUserToUser(data.user),
+      user: authUserToUser(data.user as AuthUser),
       accessToken: data.access_token,
       isLoading: false,
       isAuthenticated: true,
+      initialRefreshDone: true,
     });
     setSessionCookies({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
-      user: data.user,
+      user: data.user as AuthUser,
     });
   }, []);
 
@@ -204,7 +218,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Clear local state even if API fails
     }
     clearSessionCookies();
-    setState({ user: null, accessToken: null, isLoading: false, isAuthenticated: false });
+    setState({ user: null, accessToken: null, isLoading: false, isAuthenticated: false, initialRefreshDone: true });
   }, []);
 
   const value: AuthContextValue = {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import Link from "next/link";
+import { useCreateCheckoutSession } from "@/services/hooks";
 
 // --- Types (match backend / checkout) ---
 type PlanId = "free" | "basic" | "pro" | "premium";
@@ -176,19 +177,23 @@ export function buildCheckoutPayload(
 
 export default function LandingPricing() {
   const [interval, setInterval] = useState<BillingInterval>("monthly");
+  const { createCheckoutSession, isLoading, error, resetError } = useCreateCheckoutSession();
+  const [checkingOutPlan, setCheckingOutPlan] = useState<PlanId | null>(null);
 
-  const handleCheckout = (planId: PlanId) => {
-    if (planId === "free") {
-      // No checkout; e.g. scroll to humanizer or sign up free
-      return;
-    }
-    const billingInterval =
-      planId === "basic" ? "weekly" : interval;
+  const handleCheckout = async (planId: PlanId) => {
+    if (planId === "free") return;
+    resetError();
+    const billingInterval = planId === "basic" ? "weekly" : interval;
     const payload = buildCheckoutPayload(planId, billingInterval);
-    // TODO: send payload to backend (e.g. POST /api/checkout or redirect with session)
-    console.log("Checkout payload:", payload);
-    // Placeholder: could redirect to /api/checkout?plan=pro&billing_interval=yearly
-    window.location.href = `/#humanizer?plan=${payload.plan}&billing_interval=${payload.billing_interval}`;
+    setCheckingOutPlan(planId);
+    const result = await createCheckoutSession({
+      plan: payload.plan,
+      billing_interval: payload.billing_interval,
+    });
+    setCheckingOutPlan(null);
+    if (result?.url) {
+      window.location.href = result.url;
+    }
   };
 
   return (
@@ -206,6 +211,12 @@ export default function LandingPricing() {
             enforces.
           </p>
         </header>
+
+        {error && (
+          <div className="mx-auto mt-6 max-w-xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-700" role="alert">
+            {error}
+          </div>
+        )}
 
         {/* Monthly / Yearly (only affects Pro & Premium) */}
         <div className="mt-10 flex justify-center">
@@ -287,14 +298,19 @@ export default function LandingPricing() {
                 ) : (
                   <button
                     type="button"
+                    disabled={isLoading}
                     onClick={() => handleCheckout(plan.id)}
-                    className={`mt-6 inline-flex w-full items-center justify-center rounded-2xl px-6 py-3.5 text-base font-semibold transition ${
+                    className={`mt-6 inline-flex w-full items-center justify-center rounded-2xl px-6 py-3.5 text-base font-semibold transition disabled:opacity-70 ${
                       isPopular
                         ? "bg-[#8B5CF6] text-white shadow-lg shadow-violet-500/25 hover:bg-violet-600"
                         : "border-2 border-slate-200 bg-white text-slate-700 hover:border-violet-300 hover:bg-slate-50"
                     }`}
                   >
-                    {plan.id === "basic" ? "Subscribe" : "Subscribe"}
+                    {checkingOutPlan === plan.id && isLoading
+                      ? "Redirecting…"
+                      : plan.id === "basic"
+                        ? "Subscribe"
+                        : "Subscribe"}
                   </button>
                 )}
 

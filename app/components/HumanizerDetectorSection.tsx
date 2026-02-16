@@ -5,7 +5,6 @@ import { BarChart3, Zap, Check, ChevronLeft, ChevronRight, Copy, BookOpen, Arrow
 import { useDetectAi, useParaphrase } from "@/services/hooks";
 import type { DetectAiResponse } from "@/services/dtos/ai";
 import { ApiError } from "@/services/apiClient";
-import CreditDisplay from "@/app/components/CreditDisplay";
 import { useDemoText } from "@/app/context/DemoContext";
 import { useAuthModal } from "@/app/context/AuthModalContext";
 import { useAuthOptional } from "@/services/hooks";
@@ -23,12 +22,6 @@ export default function HumanizerDetectorSection() {
   const [currentVersionIndex, setCurrentVersionIndex] = useState(0);
   const [detectionResult, setDetectionResult] = useState<DetectAiResponse | null>(null);
   const [insufficientCredits, setInsufficientCredits] = useState(false);
-  /** Credits from last successful humanize (paraphrase API returns remaining_credits, word_limit, message). */
-  const [lastCredits, setLastCredits] = useState<{
-    remainingCredits: number;
-    wordLimit: number;
-    message?: string;
-  } | null>(null);
 
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
   const detectionUsed = Math.min(wordCount, 1000);
@@ -47,11 +40,6 @@ export default function HumanizerDetectorSection() {
       const res = await paraphraseApi({ text: text.trim() });
       setHumanizedResult(res.paraphrased_texts?.length ? res.paraphrased_texts : []);
       setCurrentVersionIndex(0);
-      setLastCredits({
-        remainingCredits: res.remaining_credits,
-        wordLimit: res.word_limit,
-        message: res.message,
-      });
     } catch (e) {
       if (e instanceof ApiError && e.status === 403) {
         setInsufficientCredits(true);
@@ -171,16 +159,6 @@ export default function HumanizerDetectorSection() {
         </div>
 
         <div className="p-6 sm:p-8 lg:p-10">
-          {lastCredits && (
-            <div className="mb-4">
-              <CreditDisplay
-                remainingCredits={lastCredits.remainingCredits}
-                wordLimit={lastCredits.wordLimit}
-                message={lastCredits.message}
-                lowThreshold={0.2}
-              />
-            </div>
-          )}
           <div className="relative min-h-[280px] sm:min-h-[320px]">
             <textarea
               value={text}

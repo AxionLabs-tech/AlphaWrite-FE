@@ -4,27 +4,27 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { User, LogOut, Coins, CreditCard } from "lucide-react";
-import { useAuth } from "@/services/hooks";
+import { useAuth, useSubscriptionStatus } from "@/services/hooks";
+
+function planWordsLabel(plan: string): string {
+  const p = plan.toLowerCase();
+  if (p === "free") return "250 words one-time";
+  if (p === "basic") return "500 words per request";
+  if (p === "pro") return "2,000 words per request";
+  if (p === "premium") return "4,000 words per request";
+  return "—";
+}
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { data: subscription, isLoading: subscriptionLoading, error: subscriptionError } = useSubscriptionStatus();
   const email = user?.email ?? Cookies.get("alphawriteEmail") ?? "";
-  const plan = (user?.plan_type ?? Cookies.get("alphawritePlan") ?? "free").toLowerCase();
+  const plan = (subscription?.plan_type ?? user?.plan_type ?? Cookies.get("alphawritePlan") ?? "free").toLowerCase();
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
-
-  // Credits can be wired to an API later; placeholder for design
-  const credits = 40;
-  const planWordsLabel =
-    plan === "free"
-      ? "250 words one-time"
-      : plan === "basic"
-        ? "500 words per request"
-        : plan === "pro"
-          ? "2,000 words per request"
-          : plan === "premium"
-            ? "4,000 words per request"
-            : "—";
+  const credits = subscription?.remaining_credits ?? 0;
+  const isPaidPlan = ["basic", "pro", "premium"].includes(plan);
+  const showUpgrade = !isPaidPlan || credits <= 0;
 
   const handleSignOut = async () => {
     await signOut?.();
@@ -83,9 +83,17 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-6 flex flex-1 flex-col">
-              <span className="text-3xl font-bold tracking-tight text-slate-900">{credits}</span>
-              <p className="text-sm text-slate-500">credits</p>
-              <p className="text-xs text-slate-400">Available now</p>
+              {subscriptionLoading ? (
+                <div className="h-10 w-24 animate-pulse rounded-lg bg-slate-200" />
+              ) : subscriptionError ? (
+                <p className="text-sm text-amber-600">{subscriptionError}</p>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold tracking-tight text-slate-900">{credits}</span>
+                  <p className="text-sm text-slate-500">credits</p>
+                  <p className="text-xs text-slate-400">Available now</p>
+                </>
+              )}
               <Link
                 href="/#pricing"
                 className="mt-6 inline-flex items-center justify-center rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-600 hover:shadow-emerald-500/30"
@@ -107,17 +115,27 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-6 flex flex-1 flex-col">
-              <span className="text-3xl font-bold tracking-tight text-slate-900">{planLabel} Plan</span>
-              <p className="text-sm text-slate-500">{planWordsLabel}</p>
-              <p className="text-xs text-slate-400">
-                Upgrade to unlock more features and higher limits
-              </p>
-              <Link
-                href="/#pricing"
-                className="mt-6 inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-blue-500 to-[#8B5CF6] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:opacity-95 hover:shadow-violet-500/30"
-              >
-                Upgrade to Pro
-              </Link>
+              {subscriptionLoading ? (
+                <div className="h-10 w-32 animate-pulse rounded-lg bg-slate-200" />
+              ) : subscriptionError ? (
+                <p className="text-sm text-amber-600">{subscriptionError}</p>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold tracking-tight text-slate-900">{planLabel} Plan</span>
+                  <p className="text-sm text-slate-500">{planWordsLabel(plan)}</p>
+                  <p className="text-xs text-slate-400">
+                    Upgrade to unlock more features and higher limits
+                  </p>
+                </>
+              )}
+              {showUpgrade && (
+                <Link
+                  href="/#pricing"
+                  className="mt-6 inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-blue-500 to-[#8B5CF6] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:opacity-95 hover:shadow-violet-500/30"
+                >
+                  Upgrade to Pro
+                </Link>
+              )}
             </div>
           </div>
         </div>

@@ -49,6 +49,10 @@ export interface AuthCallbackResponse {
 }
 
 // --- POST auth/refresh ---
+export interface RefreshRequestBody {
+  refresh_token: string;
+}
+
 export interface RefreshResponse {
   access_token: string;
   refresh_token: string;

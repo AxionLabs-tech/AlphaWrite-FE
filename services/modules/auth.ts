@@ -11,6 +11,7 @@ import type {
   LoginResponse,
   GoogleAuthResponse,
   AuthCallbackResponse,
+  RefreshRequestBody,
   RefreshResponse,
   LogoutResponse,
 } from "../dtos/auth";
@@ -55,9 +56,9 @@ export async function getAuthCallback(params: {
   });
 }
 
-/** POST /api/v1/auth/refresh – refresh access token (send refresh token via cookie/header per backend). */
-export async function refreshToken(): Promise<RefreshResponse> {
-  return post<RefreshResponse>(AUTH.refresh);
+/** POST /api/v1/auth/refresh – refresh access token (send refresh_token in request body). */
+export async function refreshToken(body: RefreshRequestBody): Promise<RefreshResponse> {
+  return post<RefreshResponse, RefreshRequestBody>(AUTH.refresh, body);
 }
 
 /** POST /api/v1/auth/logout – invalidate session. */
