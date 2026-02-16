@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, ChevronRight } from "lucide-react";
-import AuthModal from "./AuthModal";
 import { Skeleton } from "./Skeleton";
 import { useAuthOptional } from "@/services/hooks";
+import { useAuthModal } from "@/app/context/AuthModalContext";
 
 function UserNavPillSkeleton() {
   return (
@@ -63,7 +63,7 @@ function UserNavPill({
         </div>
       ) : (
         <div
-          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-400 text-sm font-semibold text-white"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-400 text-sm font-semibold text-white"
           aria-hidden
         >
           {initial}
@@ -79,7 +79,7 @@ function UserNavPill({
 }
 
 export default function LandingNav() {
-  const [authOpen, setAuthOpen] = useState(false);
+  const { openAuthModal } = useAuthModal();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const auth = useAuthOptional();
@@ -100,7 +100,7 @@ export default function LandingNav() {
             : ""
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
             className="flex shrink-0 items-center gap-2.5 text-xl font-bold text-slate-900 transition hover:text-[#8B5CF6]"
@@ -158,7 +158,7 @@ export default function LandingNav() {
                     type="button"
                     onClick={() => {
                       setMobileOpen(false);
-                      setAuthOpen(true);
+                      openAuthModal();
                     }}
                     className="rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:bg-violet-50/50 hover:text-[#8B5CF6]"
                   >
@@ -167,7 +167,7 @@ export default function LandingNav() {
                   <button
                     onClick={() => {
                       setMobileOpen(false);
-                      setAuthOpen(true);
+                      openAuthModal();
                     }}
                     className="rounded-xl bg-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-600 hover:shadow-violet-500/30"
                   >
@@ -229,16 +229,16 @@ export default function LandingNav() {
                   />
                 ) : (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        setAuthOpen(true);
-                      }}
-                      className="rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                    >
-                      Login
-                    </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      openAuthModal();
+                    }}
+                    className="rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Login
+                  </button>
                     <Link
                       href="/#humanizer"
                       onClick={() => setMobileOpen(false)}
@@ -253,7 +253,6 @@ export default function LandingNav() {
           </div>
         )}
       </header>
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </>
   );
 }

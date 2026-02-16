@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { X, Loader2 } from "lucide-react";
 import { useRequestLogin } from "@/services/hooks";
 
@@ -147,10 +148,21 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
           </form>
         )}
 
+        <p className="mt-6 text-center text-xs text-slate-500">
+          By signing up, you agree to our{" "}
+          <Link href="/terms" onClick={handleCancel} className="font-medium text-[#8B5CF6] underline hover:text-violet-700">
+            Terms of Service
+          </Link>
+          {" "}and{" "}
+          <Link href="/privacy" onClick={handleCancel} className="font-medium text-[#8B5CF6] underline hover:text-violet-700">
+            Privacy Policy
+          </Link>.
+        </p>
+
         <button
           type="button"
           onClick={handleCancel}
-          className="mt-6 w-full text-center text-sm font-medium text-slate-500 hover:text-slate-700"
+          className="mt-4 w-full text-center text-sm font-medium text-slate-500 hover:text-slate-700"
         >
           Cancel
         </button>

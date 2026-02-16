@@ -1,5 +1,6 @@
 import LandingNav from "./components/LandingNav";
 import HeroSection from "./components/HeroSection";
+import AccountSummaryCard from "./components/AccountSummaryCard";
 import HumanizerDetectorSection from "./components/HumanizerDetectorSection";
 import Challenges from "./components/Challenges";
 import HowItWorks from "./components/HowItWorks";
@@ -19,6 +20,7 @@ export default function Home() {
       <LandingNav />
       <main>
         <HeroSection />
+        <AccountSummaryCard />
         <HumanizerDetectorSection />
         <TrustedByUniversities />
         <Challenges />

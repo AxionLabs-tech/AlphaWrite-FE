@@ -10,7 +10,7 @@ const DashboardViewContext = createContext<{
 } | null>(null);
 
 export function DashboardViewProvider({ children }: { children: ReactNode }) {
-  const [view, setView] = useState<DashboardView>("home");
+  const [view, setView] = useState<DashboardView>("profile");
   return (
     <DashboardViewContext.Provider value={{ view, setView }}>
       {children}

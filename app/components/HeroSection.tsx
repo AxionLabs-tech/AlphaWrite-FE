@@ -1,7 +1,19 @@
-import Link from "next/link";
+"use client";
+
 import { Zap, Check } from "lucide-react";
+import { useDemoText, DEFAULT_DEMO_TEXT } from "@/app/context/DemoContext";
 
 export default function HeroSection() {
+  const { setDemoText } = useDemoText();
+
+  const handleTryDemo = () => {
+    setDemoText(DEFAULT_DEMO_TEXT);
+    const formSection = document.getElementById("humanizer");
+    if (formSection) {
+      formSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="px-4 pt-12 pb-6 sm:px-6 sm:pt-16 sm:pb-8 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -25,12 +37,13 @@ export default function HeroSection() {
               AlphaWrite helps students rewrite, improve originality, and polish essays in seconds.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-              <Link
-                href="/#humanizer"
+              <button
+                type="button"
+                onClick={handleTryDemo}
                 className="rounded-2xl bg-[#8B5CF6] px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:bg-violet-600 hover:shadow-violet-500/30"
               >
                 Try AlphaWrite
-              </Link>
+              </button>
             </div>
             <ul className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-600 lg:justify-start">
               <li className="flex items-center gap-2">

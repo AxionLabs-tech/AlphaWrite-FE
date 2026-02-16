@@ -3,3 +3,4 @@
  */
 
 export { authApi, requestLogin, loginWithToken, getGoogleAuthUrl, getAuthCallback, refreshToken, logout } from "./auth";
+export { aiApi, detectAi, paraphrase } from "./ai";

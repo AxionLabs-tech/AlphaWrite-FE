@@ -13,7 +13,7 @@ export function Skeleton({ className = "", ...props }: SkeletonProps) {
     <div
       role="status"
       aria-label="Loading"
-      className={`animate-pulse rounded-md bg-slate-200 ${className}`}
+      className={`animate-pulse rounded-xl bg-slate-200 ${className}`}
       {...props}
     />
   );

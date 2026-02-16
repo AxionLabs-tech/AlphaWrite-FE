@@ -15,3 +15,6 @@ export type {
   UseGoogleAuthResult,
   UseLogoutResult,
 } from "./auth";
+
+export { useDetectAi, useParaphrase } from "./ai";
+export type { UseDetectAiResult, UseParaphraseResult } from "./ai";

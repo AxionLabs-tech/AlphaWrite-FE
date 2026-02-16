@@ -38,3 +38,12 @@ export type {
   LogoutResponse,
   ApiDetailError,
 } from "./auth";
+
+// AI DTOs (detect-ai, paraphrase)
+export type {
+  DetectAiBody,
+  DetectAiResponse,
+  DetectAiProbabilities,
+  ParaphraseBody,
+  ParaphraseResponse,
+} from "./ai";
