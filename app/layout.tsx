@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "AlphaWrite – Write Smarter. Sound Human.",
   description:
     "AlphaWrite helps students rewrite, improve originality, and polish essays in seconds.",
+  icons: {
+    icon: "/alphawrites.png",
+  },
 };
 
 export default function RootLayout({

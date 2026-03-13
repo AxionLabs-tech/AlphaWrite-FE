@@ -32,11 +32,11 @@ export default function Footer() {
               className="inline-flex items-center gap-2 text-slate-900 transition hover:opacity-90"
             >
               <Image
-                src="/alphawrite.png"
+                src="/alphawrites.png"
                 alt="AlphaWrite"
-                width={160}
-                height={120}
-                className="h-40 w-auto"
+                width={140}
+                height={105}
+                className="h-28 w-auto"
               />
             </Link>
             <p className="mt-4 max-w-xs text-sm text-slate-600">
