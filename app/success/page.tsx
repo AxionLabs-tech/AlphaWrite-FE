@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth, usePaymentSuccess } from "@/services/hooks";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { setSession } = useAuth();
@@ -61,5 +62,20 @@ export default function PaymentSuccessPage() {
         <p className="text-slate-600">Redirecting to dashboard…</p>
       )}
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-lg px-4 py-16 text-center">
+          <div className="mx-auto size-12 animate-spin rounded-full border-4 border-[#8B5CF6] border-t-transparent" />
+          <p className="mt-4 text-slate-600">Loading…</p>
+        </div>
+      }
+    >
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
