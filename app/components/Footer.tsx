@@ -51,11 +51,10 @@ export default function Footer() {
               Product
             </h3>
             <ul className="mt-4 space-y-3">
-              {productLinks.map(({ href, label, external }) => (
+              {productLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link
                     href={href}
-                    {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     className="text-sm text-slate-600 transition hover:text-[#8B5CF6]"
                   >
                     {label}
