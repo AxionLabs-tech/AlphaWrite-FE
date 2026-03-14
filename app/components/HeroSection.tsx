@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap, Check } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useDemoText, DEFAULT_DEMO_TEXT } from "@/app/context/DemoContext";
 
 export default function HeroSection() {
@@ -45,20 +45,6 @@ export default function HeroSection() {
                 Try AlphaWrite
               </button>
             </div>
-            <ul className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-600 lg:justify-start">
-              <li className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-500" aria-hidden />
-                No credit card required
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-500" aria-hidden />
-                500 words free
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-500" aria-hidden />
-                Cancel anytime
-              </li>
-            </ul>
           </div>
           <HeroDemoCard />
         </div>

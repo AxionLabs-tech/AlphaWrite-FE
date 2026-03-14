@@ -4,7 +4,7 @@ import Image from "next/image";
 const productLinks = [
   { href: "/#humanizer", label: "AI Humanizer" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/#features", label: "Features" },
+  { href: "/#how-it-works", label: "How it works" },
 ];
 
 const resourceLinks = [
@@ -22,24 +22,21 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-slate-200 bg-slate-50/50">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <footer className="border-t border-slate-200/60 bg-white">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-2">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-slate-900 transition hover:opacity-90"
-            >
+            <Link href="/" className="inline-block transition hover:opacity-80">
               <Image
                 src="/alphawrites.png"
                 alt="AlphaWrite"
-                width={140}
-                height={105}
-                className="h-28 w-auto"
+                width={120}
+                height={90}
+                className="h-16 w-auto"
               />
             </Link>
-            <p className="mt-4 max-w-xs text-sm text-slate-600">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-500">
               Write smarter. Sound human. AI humanization and detection tools for
               students and writers.
             </p>
@@ -47,7 +44,7 @@ export default function Footer() {
 
           {/* Product */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Product
             </h3>
             <ul className="mt-4 space-y-3">
@@ -66,7 +63,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Resources
             </h3>
             <ul className="mt-4 space-y-3">
@@ -84,9 +81,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Legal / bottom bar on small screens */}
+          {/* Legal */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Legal
             </h3>
             <ul className="mt-4 space-y-3">
@@ -105,15 +102,15 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row">
-          <p className="text-sm text-slate-500">
-            © {year} AlphaWrite. All rights reserved.
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-slate-100 pt-8 sm:flex-row">
+          <p className="text-sm text-slate-400">
+            &copy; {year} AlphaWrite. All rights reserved.
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400">
             Need a custom plan?{" "}
             <Link
               href="/#cta"
-              className="font-medium text-[#8B5CF6] transition hover:underline"
+              className="font-medium text-[#8B5CF6] transition hover:text-violet-600"
             >
               Contact sales
             </Link>

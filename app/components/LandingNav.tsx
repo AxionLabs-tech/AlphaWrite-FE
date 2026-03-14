@@ -10,8 +10,8 @@ import { useAuthModal } from "@/app/context/AuthModalContext";
 
 function UserNavPillSkeleton() {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-slate-100 px-3 py-2">
-      <Skeleton className="size-9 shrink-0 rounded-full" />
+    <div className="flex items-center gap-3 rounded-full bg-slate-100 px-3 py-2">
+      <Skeleton className="size-8 shrink-0 rounded-full" />
       <div className="min-w-0 flex-1 space-y-1.5">
         <Skeleton className="h-3.5 w-28" />
         <Skeleton className="h-3 w-16" />
@@ -20,7 +20,6 @@ function UserNavPillSkeleton() {
     </div>
   );
 }
-
 
 const navLinks = [
   { href: "/blog", label: "Blog" },
@@ -54,16 +53,16 @@ function UserNavPill({
     <Link
       href="/dashboard"
       onClick={onNavigate}
-      className="flex items-center gap-3 rounded-xl bg-slate-100 px-3 py-2 shadow-sm transition hover:bg-slate-200/80"
+      className="flex items-center gap-3 rounded-full bg-slate-50 px-3 py-1.5 ring-1 ring-slate-200 transition hover:bg-slate-100"
     >
       {image ? (
-        <div className="relative size-9 shrink-0 overflow-hidden rounded-full bg-slate-200">
+        <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-slate-200">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image} alt="" className="size-full object-cover" />
         </div>
       ) : (
         <div
-          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-500 to-indigo-400 text-sm font-semibold text-white"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6] text-xs font-semibold text-white"
           aria-hidden
         >
           {initial}
@@ -87,39 +86,36 @@ export default function LandingNav() {
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll(); // run once in case already scrolled
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <>
       <header
-        className={`sticky top-0 z-40 transition-all duration-200 ${
+        className={`sticky top-0 z-40 transition-all duration-300 ${
           scrolled
-            ? "border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur"
-            : ""
+            ? "border-b border-slate-200/60 bg-white/80 shadow-sm backdrop-blur-xl"
+            : "bg-transparent"
         }`}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-2.5 text-xl font-bold text-slate-900 transition hover:text-[#8B5CF6]"
+            className="flex shrink-0 items-center gap-2.5 transition hover:opacity-80"
           >
-            <span className="items-center justify-center">
-              <Image
-              alt="logo"
+            <Image
+              alt="AlphaWrite"
               src="/alphawrites.png"
               width={120}
               height={90}
               className="h-20 w-auto"
-              />
-            </span>
-            {/* <span className="hidden sm:inline ">AlphaWrite</span> */}
+            />
           </Link>
 
           {/* Desktop nav */}
           <nav
-            className="hidden items-center gap-8 md:flex"
+            className="hidden items-center gap-1 md:flex"
             aria-label="Main navigation"
           >
             {navLinks.map((item) =>
@@ -129,7 +125,7 @@ export default function LandingNav() {
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-medium text-slate-600 transition hover:text-[#8B5CF6]"
+                  className="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 >
                   {item.label}
                 </a>
@@ -137,14 +133,14 @@ export default function LandingNav() {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="text-sm font-medium text-slate-600 transition hover:text-[#8B5CF6]"
+                  className="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 >
                   {item.label}
                 </Link>
               )
             )}
-            <span className="h-4 w-px bg-slate-200" aria-hidden />
-            <div className="flex items-center gap-3">
+            <span className="mx-2 h-5 w-px bg-slate-200" aria-hidden />
+            <div className="flex items-center gap-2">
               {auth?.isLoading ? (
                 <UserNavPillSkeleton />
               ) : auth?.isAuthenticated && auth.user ? (
@@ -161,7 +157,7 @@ export default function LandingNav() {
                       setMobileOpen(false);
                       openAuthModal();
                     }}
-                    className="rounded-xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:bg-violet-50/50 hover:text-[#8B5CF6]"
+                    className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
                   >
                     Login
                   </button>
@@ -170,7 +166,7 @@ export default function LandingNav() {
                       setMobileOpen(false);
                       openAuthModal();
                     }}
-                    className="rounded-xl bg-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-600 hover:shadow-violet-500/30"
+                    className="rounded-lg bg-[#8B5CF6] px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-600"
                   >
                     Try for free
                   </button>
@@ -183,7 +179,7 @@ export default function LandingNav() {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex size-10 items-center justify-center rounded-xl text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 md:hidden"
+            className="flex size-10 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100 md:hidden"
             aria-expanded={mobileOpen}
             aria-label="Toggle menu"
           >
@@ -193,7 +189,7 @@ export default function LandingNav() {
 
         {/* Mobile nav panel */}
         {mobileOpen && (
-          <div className="border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur md:hidden">
+          <div className="border-t border-slate-100 bg-white/95 px-4 py-4 backdrop-blur-xl md:hidden">
             <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
               {navLinks.map((item) =>
                 item.external ? (
@@ -203,7 +199,7 @@ export default function LandingNav() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-[#8B5CF6]"
+                    className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                   >
                     {item.label}
                   </a>
@@ -212,13 +208,13 @@ export default function LandingNav() {
                     key={item.label}
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-[#8B5CF6]"
+                    className="rounded-lg px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                   >
                     {item.label}
                   </Link>
                 )
               )}
-              <div className="mt-2 flex flex-col gap-2 border-t border-slate-200/80 pt-4">
+              <div className="mt-3 flex flex-col gap-2 border-t border-slate-100 pt-4">
                 {auth?.isLoading ? (
                   <UserNavPillSkeleton />
                 ) : auth?.isAuthenticated && auth.user ? (
@@ -230,20 +226,20 @@ export default function LandingNav() {
                   />
                 ) : (
                   <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMobileOpen(false);
-                      openAuthModal();
-                    }}
-                    className="rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                  >
-                    Login
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        openAuthModal();
+                      }}
+                      className="rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Login
+                    </button>
                     <Link
                       href="/#humanizer"
                       onClick={() => setMobileOpen(false)}
-                      className="rounded-xl bg-[#8B5CF6] py-3 text-center text-sm font-semibold text-white transition hover:bg-violet-600"
+                      className="rounded-lg bg-[#8B5CF6] py-2.5 text-center text-sm font-medium text-white transition hover:bg-violet-600"
                     >
                       Try for free
                     </Link>

@@ -29,64 +29,71 @@ const examples = [
 
 const metrics = [
   { value: "94%", label: "More natural tone", bg: "bg-[#8B5CF6]", text: "text-white" },
-  { value: "2-5s", label: "Average processing time", bg: "bg-violet-100", text: "text-[#8B5CF6]" },
-  { value: "100%", label: "Meaning preserved", bg: "bg-emerald-100", text: "text-emerald-700" },
+  { value: "2-5s", label: "Average processing time", bg: "bg-violet-50", text: "text-[#8B5CF6]" },
+  { value: "100%", label: "Meaning preserved", bg: "bg-emerald-50", text: "text-emerald-700" },
 ];
 
 export default function SeeTheDifference() {
   return (
-    <section id="see-the-difference" className="border-t border-slate-200 bg-slate-50/50 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <section id="see-the-difference" className="px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#8B5CF6]">
+            Before & After
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             See the difference
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-500">
             Real examples of how AlphaWrite transforms robotic text into authentic, engaging writing.
           </p>
         </div>
-        <div className="mt-12 space-y-10">
+
+        <div className="mt-14 space-y-6">
           {examples.map((ex) => (
             <div
               key={ex.type}
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+              className="overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200/80 transition hover:shadow-lg hover:shadow-slate-200/50"
             >
-              <div className="mb-4 flex items-center gap-2 text-[#8B5CF6]">
-                <ex.icon className="h-5 w-5" aria-hidden />
-                <span className="font-semibold">{ex.type}</span>
-              </div>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">BEFORE AI-Generated</p>
-                  <p className="rounded-lg bg-rose-50 p-4 text-sm text-slate-700">{ex.before}</p>
-                  <ul className="mt-2 flex flex-wrap gap-2">
-                    {ex.issues.map((issue) => (
-                      <li key={issue} className="text-xs font-medium text-rose-600">
-                        {issue}
-                      </li>
-                    ))}
-                  </ul>
+              <div className="flex items-center gap-2.5 border-b border-slate-100 px-6 py-4">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-[#8B5CF6]/10">
+                  <ex.icon className="size-4 text-[#8B5CF6]" aria-hidden />
                 </div>
-                <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">AFTER Humanized</p>
-                  <p className="rounded-lg bg-emerald-50 p-4 text-sm text-slate-700">{ex.after}</p>
-                  <ul className="mt-2 flex flex-wrap gap-2">
-                    {ex.improvements.map((imp) => (
-                      <li key={imp} className="text-xs font-medium text-emerald-600">
-                        {imp}
-                      </li>
+                <span className="text-sm font-semibold text-slate-900">{ex.type}</span>
+              </div>
+              <div className="grid gap-0 sm:grid-cols-2">
+                <div className="border-b border-slate-100 p-6 sm:border-b-0 sm:border-r">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-rose-500">Before</p>
+                  <p className="rounded-xl bg-rose-50/60 p-4 text-sm leading-relaxed text-slate-700">{ex.before}</p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {ex.issues.map((issue) => (
+                      <span key={issue} className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-600 ring-1 ring-rose-200/60">
+                        {issue}
+                      </span>
                     ))}
-                  </ul>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-emerald-600">After</p>
+                  <p className="rounded-xl bg-emerald-50/60 p-4 text-sm leading-relaxed text-slate-700">{ex.after}</p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {ex.improvements.map((imp) => (
+                      <span key={imp} className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-600 ring-1 ring-emerald-200/60">
+                        {imp}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-12 grid gap-4 sm:grid-cols-3">
+
+        <div className="mt-14 grid gap-4 sm:grid-cols-3">
           {metrics.map((m) => (
-            <div key={m.label} className={`rounded-xl p-6 text-center ${m.bg} ${m.text}`}>
-              <p className="text-2xl font-bold sm:text-3xl">{m.value}</p>
-              <p className="mt-1 text-sm font-medium opacity-90">{m.label}</p>
+            <div key={m.label} className={`rounded-2xl p-6 text-center ${m.bg} ${m.text}`}>
+              <p className="text-3xl font-bold">{m.value}</p>
+              <p className="mt-1 text-sm font-medium opacity-80">{m.label}</p>
             </div>
           ))}
         </div>

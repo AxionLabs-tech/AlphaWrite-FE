@@ -28,10 +28,13 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-white px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+    <section id="how-it-works" className="px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <header className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#8B5CF6]">
+            How it works
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
             Humanize AI Writing in 3 Simple Steps
           </h2>
           <p className="mt-4 text-lg text-slate-500">
@@ -40,7 +43,7 @@ export default function HowItWorks() {
         </header>
 
         {/* Video */}
-        <div className="mt-14 overflow-hidden rounded-2xl border border-violet-200 shadow-lg shadow-violet-500/10 aspect-video">
+        <div className="mx-auto mt-14 max-w-4xl overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-slate-900/20 aspect-video">
           <video
             src="/videos/how-it-works.mp4"
             controls
@@ -53,19 +56,19 @@ export default function HowItWorks() {
         </div>
 
         {/* Step Cards */}
-        <div className="mt-16 grid gap-8 sm:grid-cols-3">
+        <div className="mt-16 grid gap-6 sm:grid-cols-3">
           {steps.map((item) => (
             <div
               key={item.step}
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-violet-200 hover:shadow-md"
+              className="group rounded-2xl bg-white p-6 ring-1 ring-slate-200/80 transition-all duration-200 hover:ring-[#8B5CF6]/30 hover:shadow-lg hover:shadow-violet-500/5"
             >
-              <div className="flex h-48 items-center justify-center rounded-xl bg-violet-50">
-                <item.icon className="size-16 text-[#8B5CF6]/40" aria-hidden />
+              <div className="flex h-44 items-center justify-center rounded-xl bg-violet-50/60">
+                <item.icon className="size-14 text-[#8B5CF6]/30 transition-colors group-hover:text-[#8B5CF6]/50" aria-hidden />
               </div>
-              <span className="mt-5 inline-block rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-[#8B5CF6]">
+              <span className="mt-5 inline-block rounded-full bg-[#8B5CF6]/10 px-3 py-1 text-xs font-semibold text-[#8B5CF6]">
                 {item.step}
               </span>
-              <h3 className="mt-3 text-lg font-bold text-slate-900">
+              <h3 className="mt-3 text-lg font-semibold text-slate-900">
                 {item.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-500">
