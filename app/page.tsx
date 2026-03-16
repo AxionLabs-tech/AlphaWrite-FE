@@ -10,6 +10,7 @@ import LandingPricing from "./components/LandingPricing";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 import TrustedByUniversities from "./components/Trusted";
+import BypassDetectors from "./components/BypassDetectors";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
         <HeroSection />
         <AccountSummaryCard />
         <HumanizerDetectorSection />
+        <BypassDetectors />
         <TrustedByUniversities />
         <Challenges />
         <SeeTheDifference />

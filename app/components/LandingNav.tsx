@@ -175,16 +175,51 @@ export default function LandingNav() {
             </div>
           </nav>
 
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex size-10 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100 md:hidden"
-            aria-expanded={mobileOpen}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
+          {/* Mobile: auth + burger */}
+          <div className="flex items-center gap-2 md:hidden">
+            {auth?.isLoading ? (
+              <Skeleton className="h-9 w-20 rounded-lg" />
+            ) : auth?.isAuthenticated && auth.user ? (
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 rounded-full bg-slate-50 px-2.5 py-1.5 ring-1 ring-slate-200 transition hover:bg-slate-100"
+              >
+                {auth.user.image ? (
+                  <div className="relative size-7 shrink-0 overflow-hidden rounded-full bg-slate-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={auth.user.image} alt="" className="size-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#8B5CF6] text-[10px] font-semibold text-white" aria-hidden>
+                    {(auth.user.name?.trim()?.[0] ?? auth.user.email.trim()[0] ?? "?").toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0 text-left">
+                  <p className="max-w-[100px] truncate text-xs font-medium text-slate-800">
+                    {auth.user.name || truncateEmail(auth.user.email, 14)}
+                  </p>
+                  <p className="text-[10px] text-slate-500">Dashboard</p>
+                </div>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openAuthModal()}
+                className="rounded-lg bg-[#8B5CF6] px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-violet-600"
+              >
+                Login
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="flex size-10 items-center justify-center rounded-lg text-slate-600 transition hover:bg-slate-100"
+              aria-expanded={mobileOpen}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile nav panel */}

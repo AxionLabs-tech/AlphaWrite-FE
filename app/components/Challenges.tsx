@@ -42,7 +42,7 @@ export default function HowItWorks() {
           </p>
         </header>
 
-        {/* Video */}
+        {/* Video — uncomment when video files are ready
         <div className="mx-auto mt-14 max-w-4xl overflow-hidden rounded-2xl bg-slate-900 shadow-2xl shadow-slate-900/20 aspect-video">
           <video
             src="/videos/how-it-works.mp4"
@@ -54,6 +54,7 @@ export default function HowItWorks() {
             Your browser does not support the video tag.
           </video>
         </div>
+        */}
 
         {/* Step Cards */}
         <div className="mt-16 grid gap-6 sm:grid-cols-3">
