@@ -2,18 +2,20 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { BarChart3, Zap, Check, Copy, BookOpen, ArrowUp, ClipboardPaste, DollarSign, AlertTriangle, Upload, Plus } from "lucide-react";
+import { BarChart3, Zap, Check, Copy, BookOpen, ArrowUp, ClipboardPaste, DollarSign, AlertTriangle, Upload, Plus, Clock } from "lucide-react";
 import { useDetectAi, useParaphrase } from "@/services/hooks";
 import type { DetectAiResponse } from "@/services/dtos/ai";
 import { getDetectionProbabilities, isDetectionAIGenerated } from "@/services/detection";
 import { ApiError } from "@/services/apiClient";
 import { useDemoText } from "@/app/context/DemoContext";
 import { useAuthModal } from "@/app/context/AuthModalContext";
+import { useHistoryModal } from "@/app/context/HistoryModalContext";
 import { useAuthOptional } from "@/services/hooks";
 
 export default function HumanizerDetectorSection() {
   const { demoText, setDemoText } = useDemoText();
   const { openAuthModal } = useAuthModal();
+  const { openHistoryModal } = useHistoryModal();
   const auth = useAuthOptional();
   const { paraphrase: paraphraseApi, isParaphrasing: isHumanizing, error: humanizeError, resetError: resetHumanizeError } = useParaphrase();
   const { detectAi: detectAiApi, isDetecting, error: detectError, resetError: resetDetectError } = useDetectAi();
@@ -145,23 +147,36 @@ export default function HumanizerDetectorSection() {
             <span className="size-2 rounded-full bg-[#8B5CF6]" aria-hidden />
             <span className="text-sm font-semibold text-slate-700 sm:text-base">AlphaWrite Workspace</span>
           </div>
-          <div className="flex rounded-xl border border-slate-200/80 bg-white p-1 shadow-sm" role="tablist">
-            {(["humanizer", "detector"] as const).map((m) => (
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-xl border border-slate-200/80 bg-white p-1 shadow-sm" role="tablist">
+              {(["humanizer", "detector"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === m}
+                  onClick={() => setMode(m)}
+                  className={`rounded-lg px-4 py-2.5 text-xs font-semibold transition-all duration-200 sm:text-sm ${
+                    mode === m
+                      ? "bg-[#8B5CF6] text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
+                  }`}
+                >
+                  {m === "humanizer" ? "AI Humanizer" : "AI Detector"}
+                </button>
+              ))}
+            </div>
+            {auth?.isAuthenticated && (
               <button
-                key={m}
                 type="button"
-                role="tab"
-                aria-selected={mode === m}
-                onClick={() => setMode(m)}
-                className={`rounded-lg px-4 py-2.5 text-xs font-semibold transition-all duration-200 sm:text-sm ${
-                  mode === m
-                    ? "bg-[#8B5CF6] text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
-                }`}
+                onClick={openHistoryModal}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-800 sm:text-sm"
+                aria-label="View history"
               >
-                {m === "humanizer" ? "AI Humanizer" : "AI Detector"}
+                <Clock className="size-4" aria-hidden />
+                <span className="hidden sm:inline">History</span>
               </button>
-            ))}
+            )}
           </div>
         </div>
 

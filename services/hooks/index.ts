@@ -19,6 +19,9 @@ export type {
 export { useDetectAi, useParaphrase } from "./ai";
 export type { UseDetectAiResult, UseParaphraseResult } from "./ai";
 
+export { useUserHistory } from "./history";
+export type { UseUserHistoryResult } from "./history";
+
 export {
   useCreateCheckoutSession,
   useSubscriptionStatus,

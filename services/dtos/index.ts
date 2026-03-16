@@ -49,6 +49,14 @@ export type {
   ParaphraseResponse,
 } from "./ai";
 
+// History DTOs (user-history)
+export type {
+  HistoryItem,
+  HistoryItemType,
+  UserHistoryResponse,
+  UserHistoryParams,
+} from "./history";
+
 // Billing DTOs (create-checkout-session, check-subscription, payment-success, subscription-status, cancel, reactivate)
 export type {
   CreateCheckoutSessionResponse,
