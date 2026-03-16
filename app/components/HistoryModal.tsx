@@ -20,6 +20,7 @@ import {
 import { useUserHistory } from "@/services/hooks/history";
 import type { HistoryItem, HistoryItemType } from "@/services/dtos/history";
 import { getDetectionProbabilities } from "@/services/detection";
+import { toast } from "sonner";
 
 interface HistoryModalProps {
   open: boolean;
@@ -212,6 +213,7 @@ function HistoryDetail({
 
   const handleCopy = useCallback((text: string) => {
     void navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, []);

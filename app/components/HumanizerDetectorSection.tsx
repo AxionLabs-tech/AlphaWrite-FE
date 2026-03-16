@@ -11,6 +11,7 @@ import { useDemoText } from "@/app/context/DemoContext";
 import { useAuthModal } from "@/app/context/AuthModalContext";
 import { useHistoryModal } from "@/app/context/HistoryModalContext";
 import { useAuthOptional } from "@/services/hooks";
+import { toast } from "sonner";
 
 export default function HumanizerDetectorSection() {
   const { demoText, setDemoText } = useDemoText();
@@ -68,6 +69,7 @@ export default function HumanizerDetectorSection() {
     if (!humanizedResult || humanizedResult.length === 0) return;
     const toCopy = humanizedResult[currentVersionIndex];
     void navigator.clipboard.writeText(toCopy);
+    toast.success("Copied to clipboard!");
   }, [humanizedResult, currentVersionIndex]);
 
   const handlePaste = useCallback(async () => {
