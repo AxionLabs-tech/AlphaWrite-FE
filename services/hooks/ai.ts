@@ -61,6 +61,7 @@ export function useParaphrase(): UseParaphraseResult {
     setError(null);
     try {
       const result = await aiApi.paraphrase(body);
+      console.log("Paraphrase response:", result);
       return result;
     } catch (e) {
       setError(getErrorMessage(e, "Paraphrase failed."));

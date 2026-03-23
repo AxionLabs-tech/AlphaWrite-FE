@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { BarChart3, Zap, Check, Copy, BookOpen, ArrowUp, ClipboardPaste, DollarSign, AlertTriangle, Upload, Plus, Clock } from "lucide-react";
+import { BarChart3, Zap, Check, Copy, ArrowUp, ClipboardPaste, DollarSign, AlertTriangle, Upload, Clock, ShieldCheck } from "lucide-react";
 import { useDetectAi, useParaphrase } from "@/services/hooks";
 import type { DetectAiResponse } from "@/services/dtos/ai";
 import { getDetectionProbabilities, isDetectionAIGenerated } from "@/services/detection";
@@ -43,7 +43,10 @@ export default function HumanizerDetectorSection() {
     resetHumanizeError();
     try {
       const res = await paraphraseApi({ text: text.trim() });
-      setHumanizedResult(res.paraphrased_texts?.length ? res.paraphrased_texts : []);
+      const cleaned = res.paraphrased_texts?.length
+        ? res.paraphrased_texts.map((t) => t.replace(/\*\*/g, ""))
+        : [];
+      setHumanizedResult(cleaned);
       setCurrentVersionIndex(0);
     } catch (e) {
       if (e instanceof ApiError && e.status === 403) {
@@ -98,7 +101,7 @@ export default function HumanizerDetectorSection() {
   }, []);
 
   const currentText = humanizedResult?.[currentVersionIndex] ?? "";
-  const resultWordCount = currentText.trim() ? currentText.trim().split(/\s+/).length : 0;
+
   const versionsCount = humanizedResult?.length ?? 0;
 
   const showResult = humanizedResult !== null && humanizedResult.length > 0;
@@ -147,7 +150,7 @@ export default function HumanizerDetectorSection() {
         <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-4">
           <div className="flex items-center gap-2">
             <span className="size-2 rounded-full bg-[#8B5CF6]" aria-hidden />
-            <span className="text-sm font-semibold text-slate-700 sm:text-base">AlphaWrite Workspace</span>
+            <span className="text-sm font-semibold text-slate-700 sm:text-base">AI Humanizer & Detector</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex rounded-xl border border-slate-200/80 bg-white p-1 shadow-sm" role="tablist">
@@ -355,51 +358,41 @@ export default function HumanizerDetectorSection() {
               >
                 <div className="pointer-events-none absolute -right-6 -top-6 size-28 rounded-full bg-emerald-500/6" aria-hidden />
                 <div className="pointer-events-none absolute -bottom-4 -left-4 size-20 rounded-full bg-violet-500/6" aria-hidden />
-                <div className="relative flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <motion.div
-                      className="flex size-12 items-center justify-center rounded-2xl bg-emerald-500 shadow-lg shadow-emerald-500/30"
+                      className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 shadow-lg shadow-emerald-500/30 sm:size-12"
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
                     >
-                      <Check className="size-6 text-white" aria-hidden />
+                      <Check className="size-5 text-white sm:size-6" aria-hidden />
                     </motion.div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 sm:text-xl">Humanized Successfully!</h3>
-                      <p className="mt-0.5 text-sm text-slate-500">Your text has been transformed to sound more natural</p>
+                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">Humanized Successfully!</h3>
+                      <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">Your text has been transformed to sound more natural</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleCopy}
-                      className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-                    >
-                      <Copy className="size-4" aria-hidden />
-                      Copy
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setHumanizedResult(null); resetHumanizeError(); }}
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#8B5CF6] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-600"
-                    >
-                      <Plus className="size-4" aria-hidden />
-                      Humanize New Text
-                    </button>
-                  </div>
+                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-600 ring-1 ring-emerald-200/50">
+                    Bypasses AI Detection
+                  </span>
                 </div>
               </motion.div>
 
               {/* Result card */}
               <motion.div
                 className="mt-4 overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-900/8 ring-1 ring-slate-900/6"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                initial={{ opacity: 0, y: 30, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 {/* Divider with labels */}
-                <div className="relative border-b border-slate-100">
+                <motion.div
+                  className="relative border-b border-slate-100"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
+                >
                   <div className="absolute inset-x-0 top-0 flex items-center justify-center">
                     <div className="flex items-center gap-1 rounded-b-lg bg-slate-50 px-4 py-1">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-red-400">Before</span>
@@ -407,12 +400,17 @@ export default function HumanizerDetectorSection() {
                       <span className="text-[10px] font-bold uppercase tracking-widest text-[#8B5CF6]">After</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Content panels */}
                 <div className="grid lg:grid-cols-2">
                   {/* Original */}
-                  <div className="border-b border-slate-100 bg-linear-to-br from-red-50/40 via-rose-50/20 to-white lg:border-b-0 lg:border-r">
+                  <motion.div
+                    className="border-b border-slate-100 bg-linear-to-br from-red-50/40 via-rose-50/20 to-white lg:border-b-0 lg:border-r"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  >
                     <div className="px-6 pt-8 sm:px-8">
                       <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.15em] text-red-400">Original</p>
                     </div>
@@ -421,10 +419,15 @@ export default function HumanizerDetectorSection() {
                         {text}
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Humanized */}
-                  <div className="bg-linear-to-br from-violet-50/30 via-white to-emerald-50/20">
+                  <motion.div
+                    className="bg-linear-to-br from-violet-50/30 via-white to-emerald-50/20"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.45, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  >
                     <div className="px-6 pt-8 sm:px-8">
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8B5CF6]">Humanized</p>
@@ -452,40 +455,36 @@ export default function HumanizerDetectorSection() {
                       <motion.p
                         key={currentVersionIndex}
                         className="whitespace-pre-wrap text-sm leading-[1.85] text-slate-800 sm:text-[15px]"
-                        initial={{ opacity: 0, y: 6 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
                       >
                         {currentText}
                       </motion.p>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Footer */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/40 px-6 py-3 sm:px-8">
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
-                    <span className="tabular-nums">{wordCount} → {resultWordCount} words</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {([
-                      { label: "Undetectable", icon: Check, bg: "bg-emerald-50", text: "text-emerald-600", ring: "ring-emerald-200/50" },
-                      { label: "Natural", icon: Zap, bg: "bg-violet-50", text: "text-[#8B5CF6]", ring: "ring-violet-200/50" },
-                      { label: "Preserved meaning", icon: BookOpen, bg: "bg-sky-50", text: "text-sky-600", ring: "ring-sky-200/50" },
-                    ] as const).map((tag, i) => (
-                      <motion.span
-                        key={tag.label}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold ring-1 ${tag.bg} ${tag.text} ${tag.ring}`}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
-                      >
-                        <tag.icon className="size-3" aria-hidden />
-                        {tag.label}
-                      </motion.span>
-                    ))}
-                  </div>
-                </div>
+                <motion.div
+                  className="flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/40 px-6 py-3 sm:px-8"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.4 }}
+                >
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-600 ring-1 ring-emerald-200/50">
+                    <ShieldCheck className="size-3.5" aria-hidden />
+                    100% human written
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  >
+                    <Copy className="size-4" aria-hidden />
+                    Copy
+                  </button>
+                </motion.div>
               </motion.div>
             </div>
           )}

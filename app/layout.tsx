@@ -150,7 +150,7 @@ gtag('config', 'G-127844YPY8');`,
           />
         </noscript>
         <Providers>{children}</Providers>
-        <Toaster richColors position="top-center" />
+        <Toaster richColors position="bottom-right" />
       </body>
     </html>
   );
