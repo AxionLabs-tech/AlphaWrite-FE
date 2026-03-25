@@ -22,6 +22,9 @@ export type { UseDetectAiResult, UseParaphraseResult } from "./ai";
 export { useUserHistory } from "./history";
 export type { UseUserHistoryResult } from "./history";
 
+export { useSubmitSurvey } from "./onboarding";
+export type { UseSubmitSurveyResult } from "./onboarding";
+
 export {
   useCreateCheckoutSession,
   useSubscriptionStatus,
@@ -38,3 +41,30 @@ export type {
   UseCancelSubscriptionResult,
   UseReactivateSubscriptionResult,
 } from "./billing";
+
+export {
+  useAdminLogin,
+  useAdminVerifyTotp,
+  useAdminVerifyRecovery,
+  useUpdateUserPlan,
+  useSendEmail,
+  useBulkEmail,
+  useSendWelcomeEmail,
+  useUpdateCredits,
+  useUpdateSubscriptions,
+  useAdminStats,
+  useAdminUsers,
+} from "./admin";
+export type {
+  UseAdminLoginResult,
+  UseAdminVerifyTotpResult,
+  UseAdminVerifyRecoveryResult,
+  UseUpdateUserPlanResult,
+  UseSendEmailResult,
+  UseBulkEmailResult,
+  UseSendWelcomeEmailResult,
+  UseUpdateCreditsResult,
+  UseUpdateSubscriptionsResult,
+  UseAdminStatsResult,
+  UseAdminUsersResult,
+} from "./admin";

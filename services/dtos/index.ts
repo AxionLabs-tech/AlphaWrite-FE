@@ -57,6 +57,9 @@ export type {
   UserHistoryParams,
 } from "./history";
 
+// Onboarding DTOs (survey)
+export type { SurveyRequest, SurveyResponse } from "./onboarding";
+
 // Billing DTOs (create-checkout-session, check-subscription, payment-success, subscription-status, cancel, reactivate)
 export type {
   CreateCheckoutSessionResponse,
@@ -69,3 +72,17 @@ export type {
   CancelSubscriptionResponse,
   ReactivateSubscriptionResponse,
 } from "./billing";
+
+// Admin DTOs
+export type {
+  AdminLoginBody,
+  AdminLoginResponse,
+  AdminVerifyTotpBody,
+  AdminVerifyRecoveryBody,
+  AdminAuthResponse,
+  AdminStatsResponse,
+  AdminUser,
+  AdminUsersParams,
+  AdminRequestsParams,
+  SendEmailResponse,
+} from "./admin";
