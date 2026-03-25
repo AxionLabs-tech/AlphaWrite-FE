@@ -49,6 +49,13 @@ function LoginContent() {
         Cookies.set("alphawriteAvatarUrl", data.user.avatar_url ?? "", COOKIE_OPTS);
         Cookies.set("alphawriteEmail", data.user.email, COOKIE_OPTS);
         Cookies.set("alphawritePlan", data.user.plan_type, COOKIE_OPTS);
+        try {
+          if (data.user?.trial_used === false) {
+            sessionStorage.setItem("alphawrite_show_survey", "1");
+          }
+        } catch {
+          // ignore
+        }
         router.push("/");
       })
       .catch(() => {

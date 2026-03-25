@@ -50,7 +50,7 @@ function boldenQuote(quote: string, boldPhrases: string[]) {
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="bg-slate-50/80 px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+    <section id="testimonials" className="bg-slate-50/80 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-8">

@@ -13,6 +13,7 @@ import { Loader2 } from "lucide-react";
 
 const OAUTH_STATE_KEY = "alphawrite_oauth_state";
 const OAUTH_CODE_VERIFIER_KEY = "alphawrite_oauth_code_verifier";
+const SURVEY_FLAG_KEY = "alphawrite_show_survey";
 
 function CallbackContent() {
   const router = useRouter();
@@ -47,6 +48,13 @@ function CallbackContent() {
             // ignore
           }
           setSession(data);
+          try {
+            if (data.user?.trial_used === false) {
+              sessionStorage.setItem(SURVEY_FLAG_KEY, "1");
+            }
+          } catch {
+            // ignore
+          }
           setStatus("success");
           router.replace("/");
         })
@@ -73,6 +81,13 @@ function CallbackContent() {
       .then((data) => {
         if (cancelled) return;
         setSession(data);
+        try {
+          if (data.user?.trial_used === false) {
+            sessionStorage.setItem(SURVEY_FLAG_KEY, "1");
+          }
+        } catch {
+          // ignore
+        }
         setStatus("success");
         router.replace("/");
       })

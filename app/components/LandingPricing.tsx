@@ -199,7 +199,7 @@ export default function LandingPricing() {
   return (
     <section
       id="pricing"
-      className="border-t border-slate-200 bg-slate-50/60 px-4 py-24 sm:px-6 sm:py-32 lg:px-8"
+      className="border-t border-slate-200 bg-slate-50/60 px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
     >
       <div className="mx-auto max-w-6xl">
         <header className="text-center">

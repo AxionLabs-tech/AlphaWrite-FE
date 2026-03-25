@@ -21,6 +21,7 @@ import { useUserHistory } from "@/services/hooks/history";
 import type { HistoryItem, HistoryItemType } from "@/services/dtos/history";
 import { getDetectionProbabilities } from "@/services/detection";
 import { toast } from "sonner";
+import { Skeleton } from "./Skeleton";
 
 interface HistoryModalProps {
   open: boolean;
@@ -503,9 +504,21 @@ export default function HistoryModal({ open, onClose }: HistoryModalProps) {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-5 sm:p-6">
               {isLoading && items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <span className="size-8 animate-spin rounded-full border-2 border-[#8B5CF6] border-t-transparent" />
-                  <p className="mt-3 text-sm text-slate-400">Loading history...</p>
+                <div className="space-y-2.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-xl border border-slate-200/80 bg-white p-4 sm:p-5"
+                    >
+                      <Skeleton className="h-4 w-3/4" />
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <Skeleton className="h-5 w-20 rounded-full" />
+                        <Skeleton className="h-4 w-14" />
+                        <Skeleton className="h-5 w-16 rounded-full" />
+                        <Skeleton className="h-5 w-16 rounded-full" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : error ? (
                 <div className="flex flex-col items-center justify-center py-16">

@@ -3,7 +3,7 @@ import { Sparkles, Check } from "lucide-react";
 
 export default function FinalCTA() {
   return (
-    <section id="cta" className="px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
+    <section id="cta" className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-brand px-6 py-20 text-center sm:px-16 sm:py-28">
           {/* Subtle background circles */}

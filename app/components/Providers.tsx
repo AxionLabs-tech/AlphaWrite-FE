@@ -5,14 +5,17 @@ import { AuthProvider } from "@/app/context/AuthContext";
 import { AuthModalProvider } from "@/app/context/AuthModalContext";
 import { HistoryModalProvider } from "@/app/context/HistoryModalContext";
 import { DemoProvider } from "@/app/context/DemoContext";
+import { OnboardingProvider } from "@/app/context/OnboardingContext";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
       <AuthModalProvider>
-        <HistoryModalProvider>
-          <DemoProvider>{children}</DemoProvider>
-        </HistoryModalProvider>
+        <OnboardingProvider>
+          <HistoryModalProvider>
+            <DemoProvider>{children}</DemoProvider>
+          </HistoryModalProvider>
+        </OnboardingProvider>
       </AuthModalProvider>
     </AuthProvider>
   );
