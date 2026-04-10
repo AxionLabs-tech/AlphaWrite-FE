@@ -4,11 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AlertTriangle, ArrowLeft, Zap } from "lucide-react";
-import { useCreateCheckoutSession } from "@/services/hooks";
 
 export default function PaymentCancelPage() {
   const router = useRouter();
-  const { createCheckoutSession, isLoading } = useCreateCheckoutSession();
   const [redirectCount, setRedirectCount] = useState(10);
 
   useEffect(() => {
@@ -16,7 +14,7 @@ export default function PaymentCancelPage() {
       setRedirectCount((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          router.push("/");
+          router.push("/#pricing");
           return 0;
         }
         return prev - 1;
@@ -26,7 +24,7 @@ export default function PaymentCancelPage() {
   }, [router]);
 
   const handleRetry = () => {
-    void createCheckoutSession({ plan: "pro", billing_interval: "monthly" });
+    router.push("/#pricing");
   };
 
   return (
@@ -47,15 +45,10 @@ export default function PaymentCancelPage() {
           <button
             type="button"
             onClick={handleRetry}
-            disabled={isLoading}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#8B5CF6] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:bg-violet-600 disabled:opacity-70"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#8B5CF6] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition hover:bg-violet-600"
           >
-            {isLoading ? (
-              <span className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            ) : (
-              <Zap className="size-4" aria-hidden />
-            )}
-            {isLoading ? "Processing..." : "Try Again — Upgrade to Pro"}
+            <Zap className="size-4" aria-hidden />
+            View Plans
           </button>
           <Link
             href="/"
