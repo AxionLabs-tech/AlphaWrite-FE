@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import { useAuthOptional } from "@/services/hooks";
 import OnboardingSurvey from "@/app/components/OnboardingSurvey";
 
@@ -13,35 +13,38 @@ const OnboardingContext = createContext<{
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const shownRef = useRef(false);
   const session = useAuthOptional();
   const user = session?.user ?? null;
   const trialUsed = user?.trial_used;
 
   const openSurvey = useCallback(() => setOpen(true), []);
-  const closeSurvey = useCallback(() => setOpen(false), []);
+  const closeSurvey = useCallback(() => {
+    setOpen(false);
+    // Refresh session so local state picks up updated trial_used from backend
+    session?.refreshSession();
+  }, [session]);
 
-  // Check immediately when user object changes
+  // Check for survey flag when user data loads
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (trialUsed !== false) return;
-    const flag = sessionStorage.getItem(STORAGE_KEY);
-    if (flag) {
-      sessionStorage.removeItem(STORAGE_KEY);
-      setOpen(true);
-    }
-  }, [trialUsed]);
+    if (shownRef.current) return;
 
-  // Also check after a short delay to catch flag set during navigation
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (trialUsed !== false) return;
-    const timer = setTimeout(() => {
+    const checkFlag = () => {
       const flag = sessionStorage.getItem(STORAGE_KEY);
       if (flag) {
         sessionStorage.removeItem(STORAGE_KEY);
+        shownRef.current = true;
         setOpen(true);
       }
-    }, 500);
+    };
+
+    // Check immediately
+    checkFlag();
+
+    // Also check after a short delay to catch flag set during navigation
+    const timer = setTimeout(checkFlag, 500);
     return () => clearTimeout(timer);
   }, [trialUsed]);
 
