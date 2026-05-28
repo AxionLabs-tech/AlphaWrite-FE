@@ -37,6 +37,7 @@ import {
 import type { ConversationMessage } from "@/services/dtos/writing";
 import type { DetectAiResponse, ParaphraseResponse } from "@/services/dtos/ai";
 import { WriterShell, WriterTabs } from "@/app/components/WriterShell";
+import { MarkdownMessage } from "@/app/components/MarkdownMessage";
 
 const STREAM_PREF_KEY = "alphawrite.write.streamPreferred";
 const STYLE_PREF_KEY = "alphawrite.write.useStyleFingerprint";
@@ -45,27 +46,73 @@ type ThreadMessage = ConversationMessage & { pending?: boolean };
 
 interface SuggestedPrompt {
   icon: React.ReactNode;
-  label: string;
+  title: string;
+  hint: string;
   prompt: string;
 }
 
-const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
+interface PromptGroup {
+  label: string;
+  prompts: SuggestedPrompt[];
+}
+
+const PROMPT_GROUPS: PromptGroup[] = [
   {
-    icon: <SquarePen className="size-4" aria-hidden />,
-    label: "Draft a marketing email",
-    prompt:
-      "Write a friendly 200-word marketing email introducing our new product to existing customers. Keep it warm and avoid jargon.",
+    label: "Draft",
+    prompts: [
+      {
+        icon: <SquarePen className="size-4" aria-hidden />,
+        title: "Marketing email",
+        hint: "200 words, warm tone",
+        prompt:
+          "Write a friendly 200-word marketing email introducing our new product to existing customers. Keep it warm and avoid jargon.",
+      },
+      {
+        icon: <MessageSquarePlus className="size-4" aria-hidden />,
+        title: "Blog post outline",
+        hint: "1,200 words, 5 sections",
+        prompt:
+          "Outline a 1,200-word blog post about staying focused while working from home. Include 5 H2 sections and a punchy intro.",
+      },
+    ],
   },
   {
-    icon: <Sparkles className="size-4" aria-hidden />,
-    label: "Polish a paragraph",
-    prompt: "Polish this paragraph and improve flow without changing the meaning:\n\n",
+    label: "Polish",
+    prompts: [
+      {
+        icon: <Sparkles className="size-4" aria-hidden />,
+        title: "Improve a paragraph",
+        hint: "Tighten flow, keep meaning",
+        prompt:
+          "Polish this paragraph and improve flow without changing the meaning:\n\n",
+      },
+      {
+        icon: <Wand2 className="size-4" aria-hidden />,
+        title: "Match my style",
+        hint: "Rewrite in my voice",
+        prompt:
+          "Rewrite the following text to match my writing style, keeping the meaning intact:\n\n",
+      },
+    ],
   },
   {
-    icon: <MessageSquarePlus className="size-4" aria-hidden />,
-    label: "Outline a blog post",
-    prompt:
-      "Outline a 1,200-word blog post about staying focused while working from home. Include 5 H2 sections and a punchy intro.",
+    label: "Brainstorm",
+    prompts: [
+      {
+        icon: <MessageSquarePlus className="size-4" aria-hidden />,
+        title: "Subject line variants",
+        hint: "5 punchy options",
+        prompt:
+          "Give me 5 punchy subject line options for an email about ",
+      },
+      {
+        icon: <Sparkles className="size-4" aria-hidden />,
+        title: "Counter-arguments",
+        hint: "Stress-test my thinking",
+        prompt:
+          "Play devil's advocate and give me 3 strong counter-arguments to this position:\n\n",
+      },
+    ],
   },
 ];
 
@@ -358,21 +405,59 @@ export default function WritePage() {
 
   return (
     <WriterShell middleColumn={middleColumn} middleColumnLabel="Chat history">
-      <section className="flex flex-1 flex-col bg-white">
-        {/* Header — slim, mostly empty since the sidebar/middle column convey nav */}
-        <header className="flex items-center justify-end gap-2 border-b border-slate-100 px-4 py-2.5 pl-14 lg:pl-4 lg:px-8">
-          <div className="mr-auto min-w-0">
-            <h1 className="truncate text-sm font-semibold text-slate-900">
-              {activeConversation?.title ?? (activeId ? "Conversation" : "AI Writing Assistant")}
-            </h1>
-          </div>
-          {effectiveUseStyle && (
-            <span className="hidden items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-medium text-[#8B5CF6] sm:flex">
-              <Wand2 className="size-3" aria-hidden />
-              Your style
-            </span>
-          )}
-        </header>
+      <section className="relative flex flex-1 flex-col bg-gradient-to-b from-slate-50/40 via-white to-white">
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-violet-50/40 to-transparent" />
+        {/* Header — only renders for active conversations */}
+        {activeId && (
+          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-100/80 bg-white/70 px-4 py-3 backdrop-blur-xl pl-14 lg:pl-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/40">
+                <Sparkles className="size-4 text-white" aria-hidden />
+                {chatStream.isStreaming && (
+                  <span className="absolute -right-0.5 -top-0.5 flex size-2.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <h1 className="truncate text-[15px] font-semibold tracking-tight text-slate-900">
+                  {activeConversation?.title ?? "Conversation"}
+                </h1>
+                <p className="truncate text-[11px] font-medium text-slate-500">
+                  {chatStream.isStreaming ? (
+                    <span className="inline-flex items-center gap-1 text-emerald-600">
+                      <span className="size-1 animate-pulse rounded-full bg-emerald-500" />
+                      Writing…
+                    </span>
+                  ) : activeConversation ? (
+                    `Updated ${formatRelative(activeConversation.updated_at)}`
+                  ) : (
+                    "Ready"
+                  )}
+                  {effectiveUseStyle && (
+                    <>
+                      <span className="mx-1.5 text-slate-300">·</span>
+                      <span className="inline-flex items-center gap-0.5 text-[#8B5CF6]">
+                        <Wand2 className="size-2.5" aria-hidden />
+                        Your style
+                      </span>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={startNewChat}
+              className="hidden items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-[12px] font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:border-violet-200 hover:bg-violet-50/60 hover:text-[#8B5CF6] sm:inline-flex"
+              title="Start a new chat"
+            >
+              <Plus className="size-3.5" aria-hidden />
+              New
+            </button>
+          </header>
+        )}
 
         {/* Thread */}
         <div
@@ -383,7 +468,7 @@ export default function WritePage() {
           {isEmpty ? (
             <EmptyState
               styleReady={styleReady}
-              prompts={SUGGESTED_PROMPTS}
+              groups={PROMPT_GROUPS}
               onSelectPrompt={usePrompt}
             />
           ) : conversation.isLoading ? (
@@ -408,14 +493,14 @@ export default function WritePage() {
         </div>
 
         {/* Composer */}
-        <div className="border-t border-slate-100 bg-white px-4 pb-4 pt-3 lg:px-8">
+        <div className="bg-gradient-to-b from-transparent to-white px-4 pb-5 pt-4 lg:px-8">
           <div className="mx-auto max-w-3xl">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 void handleSend();
               }}
-              className="rounded-2xl border border-slate-200 bg-white shadow-[0_2px_12px_-2px_rgba(15,23,42,0.06)] transition focus-within:border-[#8B5CF6]/40 focus-within:ring-2 focus-within:ring-[#8B5CF6]/15"
+              className="group/composer relative rounded-2xl border border-slate-200 bg-white shadow-[0_4px_24px_-8px_rgba(15,23,42,0.10)] transition-all duration-200 focus-within:border-[#8B5CF6]/50 focus-within:shadow-[0_8px_32px_-8px_rgba(139,92,246,0.25)] focus-within:ring-4 focus-within:ring-[#8B5CF6]/10"
             >
               <textarea
                 ref={textareaRef}
@@ -429,7 +514,7 @@ export default function WritePage() {
                 }}
                 rows={1}
                 placeholder={isBusy ? "Generating reply…" : "Message the writing assistant…"}
-                className="block max-h-[200px] min-h-[44px] w-full resize-none bg-transparent px-4 pt-3 pb-1 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                className="block max-h-[200px] min-h-[48px] w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none"
                 disabled={isBusy && !chatStream.isStreaming}
               />
               <div className="flex items-center gap-1 px-2 pb-2">
@@ -449,9 +534,12 @@ export default function WritePage() {
                   tooltip="Stream the reply as it generates"
                 />
                 <div className="ml-auto flex items-center gap-2">
-                  <span className="hidden text-[10px] text-slate-400 sm:inline">
-                    Enter to send · Shift+Enter for newline
-                  </span>
+                  {draft.trim() && !chatStream.isStreaming && (
+                    <span className="hidden text-[10px] font-medium text-slate-400 sm:inline">
+                      <kbd className="rounded border border-slate-200 bg-slate-50 px-1 py-0.5 font-mono text-[9px] text-slate-500">↵</kbd>{" "}
+                      to send
+                    </span>
+                  )}
                   {chatStream.isStreaming ? (
                     <button
                       type="button"
@@ -517,52 +605,73 @@ export default function WritePage() {
 
 function EmptyState({
   styleReady,
-  prompts,
+  groups,
   onSelectPrompt,
 }: {
   styleReady: boolean;
-  prompts: SuggestedPrompt[];
+  groups: PromptGroup[];
   onSelectPrompt: (p: string) => void;
 }) {
   return (
-    <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="relative">
-        <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/30">
-          <Sparkles className="size-6 text-white" aria-hidden />
-        </div>
-        <div className="absolute -inset-3 -z-10 rounded-3xl bg-gradient-to-br from-violet-200/40 to-fuchsia-200/40 blur-xl" />
-      </div>
-      <h2 className="mt-6 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-        What should we write today?
-      </h2>
-      <p className="mt-2 max-w-md text-sm text-slate-500">
-        Ask for a draft, polish an existing piece, or brainstorm an outline. Replies stream in real time.
-      </p>
+    <div className="relative mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-6 py-12">
+      {/* Ambient halo behind the badge */}
+      <div className="pointer-events-none absolute left-1/2 top-[18%] -z-10 size-[420px] -translate-x-1/2 rounded-full bg-violet-300/25 blur-[100px]" />
+      <div className="pointer-events-none absolute left-1/2 top-[24%] -z-10 size-[260px] -translate-x-1/2 rounded-full bg-fuchsia-300/25 blur-[80px]" />
 
-      <div className="mt-8 grid w-full gap-2 sm:grid-cols-3">
-        {prompts.map((p) => (
-          <button
-            key={p.label}
-            type="button"
-            onClick={() => onSelectPrompt(p.prompt)}
-            className="group flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 text-left transition hover:border-violet-200 hover:bg-violet-50/40"
-          >
-            <div className="flex size-7 items-center justify-center rounded-lg bg-violet-50 text-[#8B5CF6] group-hover:bg-violet-100">
-              {p.icon}
+      <div className="text-center">
+        <div className="relative inline-flex">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-xl shadow-violet-500/40">
+            <Sparkles className="size-6 text-white" aria-hidden />
+          </div>
+          <div className="absolute -inset-2 -z-10 rounded-3xl bg-gradient-to-br from-violet-300/40 to-fuchsia-300/40 blur-md" />
+        </div>
+        <h2 className="mt-6 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+          What should we write today?
+        </h2>
+        <p className="mt-2.5 max-w-md text-[15px] text-slate-500">
+          Ask for a draft, polish a piece, or brainstorm ideas. Replies stream in real time.
+        </p>
+      </div>
+
+      <div className="mt-10 grid w-full gap-6 sm:grid-cols-3">
+        {groups.map((group) => (
+          <div key={group.label}>
+            <div className="mb-2.5 flex items-center gap-2 px-1">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                {group.label}
+              </span>
+              <span className="h-px flex-1 bg-slate-200/70" />
             </div>
-            <span className="text-xs font-medium text-slate-700 group-hover:text-slate-900">
-              {p.label}
-            </span>
-          </button>
+            <div className="space-y-2">
+              {group.prompts.map((p) => (
+                <button
+                  key={p.title}
+                  type="button"
+                  onClick={() => onSelectPrompt(p.prompt)}
+                  className="group flex w-full items-start gap-2.5 rounded-xl border border-slate-200 bg-white/70 p-3 text-left backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md hover:shadow-violet-500/10"
+                >
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#8B5CF6] transition group-hover:bg-violet-100">
+                    {p.icon}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[13px] font-semibold tracking-tight text-slate-800 group-hover:text-slate-900">
+                      {p.title}
+                    </div>
+                    <div className="truncate text-[11px] text-slate-500">{p.hint}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
       {!styleReady && (
         <Link
           href="/settings/style"
-          className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50/60 px-3 py-1.5 text-[11px] font-medium text-[#8B5CF6] transition hover:bg-violet-100"
+          className="mt-8 inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50/60 px-3.5 py-1.5 text-[12px] font-medium text-[#8B5CF6] backdrop-blur-sm transition hover:bg-violet-100"
         >
-          <Wand2 className="size-3" aria-hidden />
+          <Wand2 className="size-3.5" aria-hidden />
           Set up your writing style to personalize replies
         </Link>
       )}
@@ -623,8 +732,8 @@ function Message({
 
   if (isUser) {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-slate-100 px-4 py-2.5 text-sm leading-relaxed text-slate-900">
+      <div className="animate-msg-in flex justify-end">
+        <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-gradient-to-br from-slate-100 to-slate-50 px-4 py-2.5 text-sm leading-relaxed text-slate-900 shadow-sm ring-1 ring-slate-200/60">
           {message.content}
         </div>
       </div>
@@ -634,16 +743,21 @@ function Message({
   const isComplete = !message.pending && Boolean(message.content);
 
   return (
-    <div className="flex gap-3">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-sm shadow-violet-500/20">
+    <div className="animate-msg-in flex gap-3">
+      <div className="relative flex size-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/40">
         <Sparkles className="size-4 text-white" aria-hidden />
+        <div className="pointer-events-none absolute -inset-1 -z-10 rounded-3xl bg-gradient-to-br from-violet-400/40 to-fuchsia-400/40 opacity-0 blur-md transition-opacity group-hover:opacity-100" />
       </div>
       <div className="min-w-0 flex-1 pt-0.5">
         {message.content ? (
-          <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800">
-            {message.content}
-            {message.pending && (
-              <span className="ml-1 inline-block size-2 animate-pulse rounded-full bg-[#8B5CF6] align-middle" />
+          <div className="text-sm leading-relaxed text-slate-800">
+            {message.pending ? (
+              <span className="whitespace-pre-wrap">
+                {message.content}
+                <span className="ml-1 inline-block size-2 animate-pulse rounded-full bg-[#8B5CF6] align-middle" />
+              </span>
+            ) : (
+              <MarkdownMessage content={message.content} />
             )}
           </div>
         ) : message.pending ? (
