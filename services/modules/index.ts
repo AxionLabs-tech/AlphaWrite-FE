@@ -14,3 +14,20 @@ export {
   cancelSubscription,
   reactivateSubscription,
 } from "./billing";
+export {
+  writingApi,
+  chat,
+  chatStream,
+  quickGenerate,
+  quickGenerateStream,
+  listConversations,
+  getConversation,
+  deleteConversation,
+  getQuickHistory,
+} from "./writing";
+export {
+  styleApi,
+  uploadStyleSamples,
+  getStyleFingerprint,
+  deleteStyleFingerprint,
+} from "./style";

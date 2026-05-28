@@ -68,3 +68,35 @@ export type {
   UseAdminStatsResult,
   UseAdminUsersResult,
 } from "./admin";
+
+export {
+  useChat,
+  useChatStream,
+  useQuickGenerate,
+  useQuickGenerateStream,
+  useConversations,
+  useConversation,
+  useDeleteConversation,
+  useQuickHistory,
+} from "./writing";
+export type {
+  UseChatResult,
+  UseChatStreamResult,
+  UseQuickGenerateResult,
+  UseQuickGenerateStreamResult,
+  UseConversationsResult,
+  UseConversationResult,
+  UseDeleteConversationResult,
+  UseQuickHistoryResult,
+} from "./writing";
+
+export {
+  useUploadStyleSamples,
+  useStyleFingerprint,
+  useDeleteStyleFingerprint,
+} from "./style";
+export type {
+  UseUploadStyleSamplesResult,
+  UseStyleFingerprintResult,
+  UseDeleteStyleFingerprintResult,
+} from "./style";

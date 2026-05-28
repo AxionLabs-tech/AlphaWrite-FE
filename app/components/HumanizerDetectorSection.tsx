@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { BarChart3, Zap, Check, Copy, ArrowUp, ClipboardPaste, DollarSign, AlertTriangle, Upload, Clock, ShieldCheck } from "lucide-react";
+import { BarChart3, Zap, Check, Copy, ArrowUp, ClipboardPaste, DollarSign, AlertTriangle, Upload, Clock, ShieldCheck, Sparkles, ArrowUpRight } from "lucide-react";
 import { useDetectAi, useParaphrase } from "@/services/hooks";
 import type { DetectAiResponse } from "@/services/dtos/ai";
 import { getDetectionProbabilities, isDetectionAIGenerated } from "@/services/detection";
@@ -18,6 +19,15 @@ export default function HumanizerDetectorSection() {
   const { openAuthModal } = useAuthModal();
   const { openHistoryModal } = useHistoryModal();
   const auth = useAuthOptional();
+  const router = useRouter();
+
+  const handleOpenWritingAssistant = useCallback(() => {
+    if (!auth?.isLoading && !auth?.isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+    router.push("/write");
+  }, [auth?.isAuthenticated, auth?.isLoading, openAuthModal, router]);
   const { paraphrase: paraphraseApi, isParaphrasing: isHumanizing, error: humanizeError, resetError: resetHumanizeError } = useParaphrase();
   const { detectAi: detectAiApi, isDetecting, error: detectError, resetError: resetDetectError } = useDetectAi();
 
@@ -170,6 +180,19 @@ export default function HumanizerDetectorSection() {
                   {m === "humanizer" ? "AI Humanizer" : "AI Detector"}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={handleOpenWritingAssistant}
+                className="group flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-xs font-semibold text-slate-600 transition-all duration-200 hover:bg-slate-50 hover:text-[#8B5CF6] sm:text-sm"
+                aria-label="Open Writing Assistant"
+              >
+                <Sparkles className="size-3.5" aria-hidden />
+                <span>Writing Assistant</span>
+                <ArrowUpRight
+                  className="size-3.5 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+                  aria-hidden
+                />
+              </button>
             </div>
             {auth?.isAuthenticated && (
               <button

@@ -86,3 +86,37 @@ export type {
   AdminRequestsParams,
   SendEmailResponse,
 } from "./admin";
+
+// Writing DTOs (chat, quick-generate, conversations, quick-history)
+export type {
+  ChatRequest,
+  ChatResponse,
+  QuickGenerateRequest,
+  QuickGenerateResponse,
+  ChatStreamEvent,
+  QuickGenerateStreamEvent,
+  MessageRole,
+  ConversationListLastMessage,
+  ConversationListItem,
+  ConversationListResponse,
+  ConversationMessage,
+  ConversationDetail,
+  DeleteConversationResponse,
+  QuickHistoryItem,
+  QuickHistoryResponse,
+  PaginationParams,
+  PlanType,
+} from "./writing";
+export { WRITING, PLAN_TARGET_LENGTH_CAPS } from "./writing";
+
+// Style DTOs (upload-samples, fingerprint)
+export type {
+  StyleStatus,
+  StyleFileType,
+  StyleFingerprint,
+  StyleSample,
+  UploadStyleSamplesResponse,
+  StyleFingerprintResponse,
+  DeleteStyleFingerprintResponse,
+} from "./style";
+export { STYLE } from "./style";
