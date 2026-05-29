@@ -22,6 +22,7 @@ function getAdminAuthHeaders(): Record<string, string> {
   const token = getAdminToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -84,7 +85,9 @@ export async function adminPostForm<T>(path: string, formData: FormData): Promis
   const base = getBaseUrl();
   const url = `${base}${path}`;
   // Don't set Content-Type — browser sets it with boundary automatically
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    "ngrok-skip-browser-warning": "true",
+  };
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { getAdminToken } = require("@/app/utils/adminAuth") as {
     getAdminToken: () => string | null;

@@ -2,8 +2,7 @@ import LandingNav from "./components/LandingNav";
 import HeroSection from "./components/HeroSection";
 import AccountSummaryCard from "./components/AccountSummaryCard";
 import HumanizerDetectorSection from "./components/HumanizerDetectorSection";
-import Challenges from "./components/Challenges";
-// import SeeTheDifference from "./components/SeeTheDifference";
+import HowItWorks from "./components/HowItWorks";
 
 import BeforeAfter from "./components/BeforeAfter";
 import Testimonials from "./components/Testimonials";
@@ -24,7 +23,7 @@ export default function Home() {
         <HumanizerDetectorSection />
         <BypassDetectors />
         <TrustedByUniversities />
-        <Challenges />
+        <HowItWorks />
         <BeforeAfter />
 
         <Testimonials />
