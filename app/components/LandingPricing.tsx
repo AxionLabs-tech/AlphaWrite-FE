@@ -197,36 +197,38 @@ export default function LandingPricing() {
   };
 
   return (
-    <section
-      id="pricing"
-      className="border-t border-slate-200 bg-slate-50/60 px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
-    >
+    <section id="pricing" className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-6xl">
-        <header className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Simple, transparent pricing
+        <header className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#8B5CF6]">
+            Pricing
+          </span>
+          <h2 className="mt-4 text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-slate-900">
+            Simple, transparent pricing.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-            Choose the plan that fits your needs. Limits match what the product
-            enforces.
+          <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-slate-600">
+            Choose the plan that fits your needs. Limits match what the product enforces.
           </p>
         </header>
 
         {error && (
-          <div className="mx-auto mt-6 max-w-xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-700" role="alert">
+          <div
+            className="mx-auto mt-6 max-w-xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-700"
+            role="alert"
+          >
             {error}
           </div>
         )}
 
-        {/* Monthly / Yearly (only affects Pro & Premium) */}
+        {/* Monthly / Yearly toggle */}
         <div className="mt-10 flex justify-center">
-          <div className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+          <div className="inline-flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <button
               type="button"
               onClick={() => setInterval("monthly")}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 interval === "monthly"
-                  ? "bg-[#8B5CF6] text-white"
+                  ? "bg-[#8B5CF6] text-white shadow-sm shadow-violet-500/30"
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -237,61 +239,113 @@ export default function LandingPricing() {
               onClick={() => setInterval("yearly")}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
                 interval === "yearly"
-                  ? "bg-[#8B5CF6] text-white"
+                  ? "bg-[#8B5CF6] text-white shadow-sm shadow-violet-500/30"
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
               Yearly
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold tracking-wide ${
                   interval === "yearly"
                     ? "bg-white/20 text-white"
                     : "bg-emerald-100 text-emerald-700"
                 }`}
               >
-                Save
+                Save 20%
               </span>
             </button>
           </div>
         </div>
 
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7">
           {PLANS.map((plan) => {
             const effectiveInterval =
-              plan.id === "basic" ? "weekly" : plan.intervalsAvailable.includes(interval) ? interval : "monthly";
+              plan.id === "basic"
+                ? "weekly"
+                : plan.intervalsAvailable.includes(interval)
+                  ? interval
+                  : "monthly";
             const { main, sub } = formatPrice(plan, effectiveInterval);
             const isPopular = plan.id === "pro";
 
+            const cardClass = isPopular
+              ? "relative flex flex-col overflow-hidden rounded-3xl bg-slate-900 p-7 text-white shadow-[0_0_0_1px_rgba(139,92,246,0.4),0_32px_64px_-24px_rgba(139,92,246,0.55),0_12px_24px_-8px_rgba(15,23,42,0.25)] sm:p-8"
+              : "relative flex flex-col rounded-3xl bg-white p-7 shadow-[0_0_0_1px_rgba(15,23,42,0.04),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_12px_32px_-16px_rgba(15,23,42,0.18),0_4px_8px_-4px_rgba(15,23,42,0.06)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.18),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_24px_48px_-20px_rgba(15,23,42,0.22),0_6px_12px_-4px_rgba(15,23,42,0.08)] sm:p-8";
+
             return (
-              <div
-                key={plan.id}
-                className={`relative flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 ${
-                  isPopular
-                    ? "border-[#8B5CF6] ring-2 ring-[#8B5CF6]/20 lg:-translate-y-1"
-                    : ""
-                }`}
-              >
+              <div key={plan.id} className={cardClass}>
+                {/* Violet halo behind Pro */}
                 {isPopular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#8B5CF6] px-4 py-1.5 text-xs font-semibold text-white">
-                    MOST POPULAR
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-px -z-10 rounded-3xl bg-gradient-to-br from-violet-500/30 via-transparent to-fuchsia-500/30 blur-lg"
+                  />
+                )}
+
+                {isPopular && (
+                  <div className="mb-5 inline-flex w-fit items-center gap-1.5 rounded-full bg-gradient-to-r from-[#8B5CF6] to-violet-600 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-md shadow-violet-500/40">
+                    <svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden
+                    >
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    Most popular
                   </div>
                 )}
-                <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
-                <p className="mt-1 text-sm text-slate-600">{plan.tagline}</p>
 
-                <div className="mt-6 flex flex-col gap-0.5">
-                  <span className="text-3xl font-bold text-slate-900">
-                    {main}
+                <h3
+                  className={`text-xl font-bold tracking-tight ${
+                    isPopular ? "text-white" : "text-slate-900"
+                  }`}
+                >
+                  {plan.name}
+                </h3>
+                <p
+                  className={`mt-1 text-sm leading-relaxed ${
+                    isPopular ? "text-slate-300" : "text-slate-500"
+                  }`}
+                >
+                  {plan.tagline}
+                </p>
+
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span
+                    className={`text-4xl font-bold tracking-tight ${
+                      isPopular ? "text-white" : "text-slate-900"
+                    }`}
+                  >
+                    {main.split("/")[0]}
                   </span>
-                  {sub && (
-                    <span className="text-sm text-slate-500">{sub}</span>
+                  {main.includes("/") && (
+                    <span
+                      className={`text-sm font-medium ${
+                        isPopular ? "text-slate-400" : "text-slate-500"
+                      }`}
+                    >
+                      /{main.split("/")[1]}
+                    </span>
                   )}
                 </div>
+                <p
+                  className={`mt-1 text-[13px] ${
+                    isPopular ? "text-slate-400" : "text-slate-500"
+                  }`}
+                >
+                  {sub ?? (plan.id === "free" ? "No credit card required" : "Cancel anytime")}
+                </p>
 
                 {plan.id === "free" ? (
                   <Link
                     href="/#humanizer"
-                    className="mt-6 inline-flex w-full items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-3.5 text-base font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-slate-50"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3.5 text-[15px] font-semibold text-slate-800 shadow-[0_0_0_1px_rgba(226,232,240,1),0_1px_2px_rgba(15,23,42,0.04)] transition hover:shadow-[0_0_0_1px_rgba(203,213,225,1),0_4px_10px_-2px_rgba(15,23,42,0.08)]"
                   >
                     Get started free
                   </Link>
@@ -300,30 +354,37 @@ export default function LandingPricing() {
                     type="button"
                     disabled={isLoading}
                     onClick={() => handleCheckout(plan.id)}
-                    className={`mt-6 inline-flex w-full items-center justify-center rounded-2xl px-6 py-3.5 text-base font-semibold transition disabled:opacity-70 ${
+                    className={
                       isPopular
-                        ? "bg-[#8B5CF6] text-white shadow-lg shadow-violet-500/25 hover:bg-violet-600"
-                        : "border-2 border-slate-200 bg-white text-slate-700 hover:border-violet-300 hover:bg-slate-50"
-                    }`}
+                        ? "mt-6 inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3.5 text-[15px] font-semibold text-slate-900 shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_8px_20px_-6px_rgba(0,0,0,0.3)] transition hover:bg-slate-50 disabled:opacity-70"
+                        : "mt-6 inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3.5 text-[15px] font-semibold text-slate-800 shadow-[0_0_0_1px_rgba(226,232,240,1),0_1px_2px_rgba(15,23,42,0.04)] transition hover:shadow-[0_0_0_1px_rgba(203,213,225,1),0_4px_10px_-2px_rgba(15,23,42,0.08)] disabled:opacity-70"
+                    }
                   >
-                    {checkingOutPlan === plan.id && isLoading
-                      ? "Redirecting…"
-                      : plan.id === "basic"
-                        ? "Subscribe"
-                        : "Subscribe"}
+                    {checkingOutPlan === plan.id && isLoading ? "Redirecting…" : "Subscribe"}
                   </button>
                 )}
 
-                <ul className="mt-6 space-y-2.5">
+                <div
+                  className={`my-6 h-px ${isPopular ? "bg-white/10" : "bg-slate-200/70"}`}
+                />
+
+                <ul className="space-y-3">
                   {plan.features.map((f) => (
                     <li
                       key={f}
-                      className="flex items-start gap-2 text-sm text-slate-600"
+                      className={`flex items-start gap-2.5 text-[13.5px] leading-relaxed ${
+                        isPopular ? "text-slate-200" : "text-slate-600"
+                      }`}
                     >
-                      <Check
-                        className="mt-0.5 size-5 shrink-0 text-[#8B5CF6]"
-                        aria-hidden
-                      />
+                      <span
+                        className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${
+                          isPopular
+                            ? "bg-violet-500/30 text-violet-200"
+                            : "bg-violet-50 text-[#8B5CF6]"
+                        }`}
+                      >
+                        <Check className="size-2.5" strokeWidth={3} aria-hidden />
+                      </span>
                       {f}
                     </li>
                   ))}
@@ -333,18 +394,15 @@ export default function LandingPricing() {
           })}
         </div>
 
-        <p className="mt-10 text-center text-sm text-slate-600">
-          No credit card required for Free. Cancel anytime on paid plans.
-        </p>
-        <p className="mt-2 text-center text-sm text-slate-600">
-          Need a custom plan?{" "}
-          <Link
-            href="#cta"
-            className="font-medium text-[#8B5CF6] hover:underline"
-          >
-            Contact our sales team
-          </Link>
-        </p>
+        <div className="mt-10 flex flex-col items-center gap-1 text-center text-sm text-slate-600">
+          <p>No credit card required for Free. Cancel anytime on paid plans.</p>
+          <p>
+            Need a custom plan?{" "}
+            <Link href="#cta" className="font-medium text-[#8B5CF6] hover:underline">
+              Contact our sales team
+            </Link>
+          </p>
+        </div>
       </div>
     </section>
   );

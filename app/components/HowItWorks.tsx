@@ -1,81 +1,163 @@
-import Link from "next/link";
-import { FileText, Sparkles, CheckCircle, ArrowRight } from "lucide-react";
+"use client";
 
-const steps = [
+import { useEffect, useRef, useState } from "react";
+import { ClipboardList, BarChart3, Sparkles, Play } from "lucide-react";
+
+interface Step {
+  num: string;
+  eyebrow: string;
+  EyebrowIcon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+  title: string;
+  body: string;
+}
+
+const STEPS: Step[] = [
   {
-    number: "01",
+    num: "01",
+    eyebrow: "Paste & upload",
+    EyebrowIcon: ClipboardList,
     title: "Paste your text",
-    description: "Copy any AI-generated content into our clean, intuitive editor.",
-    icon: FileText,
-    iconStyle: { background: "linear-gradient(135deg, #6666FF 0%, #9966FF 100%)" },
+    body:
+      "Paste any content — homework, assignment, or AI-generated draft. We accept up to 4,000 words per request on Premium.",
   },
   {
-    number: "02",
-    title: "Humanize instantly",
-    description: "Our advanced AI rewrites your content to sound natural and authentic in seconds.",
-    icon: Sparkles,
-    iconStyle: { background: "linear-gradient(135deg, #9933FF 0%, #CC33FF 100%)" },
+    num: "02",
+    eyebrow: "Multi-detector check",
+    EyebrowIcon: BarChart3,
+    title: "Check the AI score",
+    body:
+      "One click runs your text against Turnitin, GPTZero, Copyleaks, ZeroGPT, QuillBot and Grammarly — see exactly how much reads as human.",
   },
   {
-    number: "03",
-    title: "Use confidently",
-    description: "Get polished, human-sounding text that preserves your original meaning.",
-    icon: CheckCircle,
-    iconStyle: { background: "#33CC66" },
+    num: "03",
+    eyebrow: "Rewrite",
+    EyebrowIcon: Sparkles,
+    title: "Humanize",
+    body:
+      "Rewrite to sound 100% human-written, preserving your meaning, tone and structure — and pass any AI detection check.",
   },
 ];
 
 export default function HowItWorks() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // Lazy-load the video when the section scrolls into view
+  useEffect(() => {
+    const el = containerRef.current;
+    const video = videoRef.current;
+    if (!el || !video) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && !video.src) {
+            video.src = "/how-it-works.mp4";
+            video.load();
+            video.play().catch(() => {});
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <section id="how-it-works" className="bg-white px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-      <div className="mx-auto max-w-5xl">
-        <header className="mx-auto max-w-2xl text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-            Simple, fast, effective
+    <section
+      id="how"
+      ref={containerRef}
+      className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32"
+    >
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-16 max-w-2xl">
+          <span className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#8B5CF6]">
+            How it works
+          </span>
+          <h2 className="mt-4 text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-slate-900">
+            Humanize AI writing in three simple steps.
           </h2>
-          <p className="mt-4 text-lg text-slate-600 sm:text-xl">
-            Transform your AI content into natural writing in three effortless steps.
+          <p className="mt-4 max-w-xl text-[17px] leading-relaxed text-slate-600">
+            Perfect for essays, assignments, blog posts and research papers.
           </p>
         </header>
 
-        <div className="mt-16 lg:mt-24">
-          <div className="flex flex-col items-stretch gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-6">
-            {steps.map((step, i) => (
-              <div key={step.number} className="flex flex-col items-center gap-6 lg:flex-row lg:items-center lg:gap-6">
-                <article className="relative w-full rounded-2xl border border-slate-200 bg-white p-6 pt-10 shadow-md lg:max-w-sm">
-                  {/* Oval number badge overlapping top-left corner */}
-                  <span className="absolute -left-1 -top-3 flex h-9 min-w-9 items-center justify-center rounded-full bg-slate-900 px-3 text-sm font-bold text-white">
-                    {step.number}
-                  </span>
-                  <div
-                    className="inline-flex size-12 items-center justify-center rounded-xl text-white"
-                    style={step.iconStyle}
-                  >
-                    <step.icon className="size-6" aria-hidden />
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16 lg:items-start">
+          {/* Steps with violet hairline rail */}
+          <ol className="relative flex flex-col gap-1">
+            <span
+              aria-hidden
+              className="absolute left-[30px] top-9 bottom-9 w-px rounded-full bg-gradient-to-b from-violet-200 to-violet-200/5"
+            />
+            {STEPS.map((s) => {
+              const Icon = s.EyebrowIcon;
+              return (
+                <li
+                  key={s.num}
+                  className="relative grid grid-cols-[60px_1fr] gap-5 py-5"
+                >
+                  <div className="flex size-[60px] items-center justify-center rounded-[18px] bg-white font-serif text-[22px] font-semibold tracking-[-0.02em] tabular-nums text-violet-700 shadow-[0_0_0_1px_rgba(15,23,42,0.06),0_8px_24px_-8px_rgba(15,23,42,0.12)]">
+                    {s.num}
                   </div>
-                  <h3 className="mt-5 text-lg font-bold text-slate-900">{step.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{step.description}</p>
-                </article>
-                {i < steps.length - 1 && (
-                  <ArrowRight
-                    className="hidden shrink-0 size-6 text-[#8B5CF6] lg:block"
+                  <div className="pt-1">
+                    <p className="mb-1.5 inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8B5CF6]">
+                      <span className="flex size-[18px] items-center justify-center rounded-md bg-violet-100/80">
+                        <Icon className="size-3 text-[#8B5CF6]" aria-hidden />
+                      </span>
+                      {s.eyebrow}
+                    </p>
+                    <h3 className="mb-1.5 text-[22px] font-bold tracking-[-0.015em] text-slate-900">
+                      {s.title}
+                    </h3>
+                    <p className="text-[15px] leading-relaxed text-slate-600">
+                      {s.body}
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* Sticky video frame — 16:10 */}
+          <div className="lg:sticky lg:top-24">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-3xl bg-slate-900 shadow-[0_0_0_1px_rgba(15,23,42,0.08),0_30px_60px_-20px_rgba(15,23,42,0.35)]">
+              {/* Gradient fallback visible until the video has data */}
+              <div
+                aria-hidden
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
+                  loaded ? "opacity-0" : "opacity-100"
+                }`}
+                style={{
+                  background:
+                    "radial-gradient(120% 60% at 50% 20%, rgba(139, 92, 246, 0.45), transparent 60%), linear-gradient(160deg, #0F172A, #6D28D9)",
+                }}
+              >
+                <span className="flex size-[88px] items-center justify-center rounded-full bg-white/10 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.18),0_20px_40px_-10px_rgba(139,92,246,0.5)]">
+                  <Play
+                    className="size-9 translate-x-0.5 text-white/85"
+                    strokeWidth={1.5}
+                    fill="currentColor"
                     aria-hidden
                   />
-                )}
+                </span>
               </div>
-            ))}
+              <video
+                ref={videoRef}
+                loop
+                muted
+                playsInline
+                preload="none"
+                onLoadedData={() => setLoaded(true)}
+                className={`absolute inset-0 size-full object-cover transition-opacity duration-500 ${
+                  loaded ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            </div>
           </div>
-        </div>
-
-        <div className="mt-16 flex justify-center lg:mt-20">
-          <Link
-            href="/#humanizer"
-            className="inline-flex items-center gap-2.5 rounded-2xl px-8 py-4 text-base font-semibold text-white shadow-lg transition hover:opacity-95"
-            style={{ background: "linear-gradient(90deg, #6666FF 0%, #9966FF 100%)" }}
-          >
-            Start Writing Better Now
-            <Sparkles className="size-5 shrink-0" aria-hidden />
-          </Link>
         </div>
       </div>
     </section>

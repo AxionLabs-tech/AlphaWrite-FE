@@ -44,50 +44,66 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <section id="faq" className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+      <div className="mx-auto max-w-3xl">
         {/* Header */}
         <div className="text-center">
-          <span className="text-xs font-medium uppercase tracking-widest text-[#8B5CF6]">
+          <span className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#8B5CF6]">
             FAQ
           </span>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Frequently asked questions
+          <h2 className="mt-4 text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-slate-900">
+            Frequently asked questions.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600">
+          <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-slate-600">
             Everything you need to know about AlphaWrite. Can&apos;t find the
             answer you&apos;re looking for? Reach out to our support team.
           </p>
         </div>
 
-        {/* Accordion */}
-        <div className="mx-auto mt-16 max-w-3xl divide-y divide-slate-200">
+        {/* Soft card rows */}
+        <div className="mt-14 space-y-3">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div key={index}>
+              <div
+                key={index}
+                className={`group rounded-2xl bg-white transition-shadow duration-300 ${
+                  isOpen
+                    ? "shadow-[0_0_0_1px_rgba(139,92,246,0.18),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_18px_38px_-18px_rgba(139,92,246,0.25),0_4px_8px_-4px_rgba(15,23,42,0.06)]"
+                    : "shadow-[0_0_0_1px_rgba(15,23,42,0.04),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_8px_24px_-12px_rgba(15,23,42,0.12),0_2px_4px_-2px_rgba(15,23,42,0.04)] hover:shadow-[0_0_0_1px_rgba(139,92,246,0.12),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_14px_30px_-14px_rgba(15,23,42,0.16),0_4px_8px_-4px_rgba(15,23,42,0.06)]"
+                }`}
+              >
                 <button
                   type="button"
                   onClick={() => toggle(index)}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left"
+                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                 >
-                  <span className="text-base font-semibold text-slate-900">
+                  <span className="text-[15px] font-semibold tracking-tight text-slate-900 sm:text-base">
                     {faq.question}
                   </span>
-                  <ChevronDown
-                    className={`size-5 shrink-0 text-[#8B5CF6] transition-transform duration-200 ${
-                      isOpen ? "rotate-180" : ""
+                  <span
+                    className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+                      isOpen
+                        ? "bg-gradient-to-br from-[#8B5CF6] to-violet-600 text-white shadow-md shadow-violet-500/40"
+                        : "bg-violet-50 text-[#8B5CF6] group-hover:bg-violet-100"
                     }`}
-                    aria-hidden
-                  />
+                  >
+                    <ChevronDown
+                      className={`size-4 transition-transform duration-300 ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                      strokeWidth={2.5}
+                      aria-hidden
+                    />
+                  </span>
                 </button>
                 <div
-                  className={`grid transition-[grid-template-rows] duration-200 ${
+                  className={`grid transition-[grid-template-rows] duration-300 ${
                     isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-5 text-sm leading-relaxed text-slate-600">
+                    <p className="px-6 pb-5 text-[14.5px] leading-relaxed text-slate-600">
                       {faq.answer}
                     </p>
                   </div>

@@ -42,68 +42,90 @@ function boldenQuote(quote: string, boldPhrases: string[]) {
   boldPhrases.forEach((phrase) => {
     result = result.replace(
       new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
-      `<strong class="font-semibold text-[#8B5CF6]">${phrase}</strong>`
+      `<strong class="font-semibold text-slate-900">${phrase}</strong>`
     );
   });
   return result;
 }
 
+function Star() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 .587l3.668 7.568L24 9.75l-6 5.847L19.336 24 12 19.897 4.664 24 6 15.597 0 9.75l8.332-1.595z" />
+    </svg>
+  );
+}
+
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="bg-slate-50/80 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <section id="testimonials" className="px-4 py-24 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-widest text-[#8B5CF6]">
+        {/* Header row */}
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between sm:gap-12">
+          <div className="max-w-md">
+            <span className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#8B5CF6]">
               Testimonials
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              What our user says
+            <h2 className="mt-4 text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-slate-900">
+              What our users say.
             </h2>
           </div>
-          <p className="max-w-sm text-base leading-relaxed text-slate-600 sm:text-right sm:text-sm">
-            Discover why people love using AlphaWrite to enhance their learning and work.
-          </p>
+          <div className="flex flex-col items-start gap-3.5 sm:items-end">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-medium text-slate-700 shadow-[0_0_0_1px_rgba(15,23,42,0.06),0_1px_2px_rgba(15,23,42,0.04)]">
+              <span className="flex gap-0.5 text-amber-500">
+                <Star />
+                <Star />
+                <Star />
+                <Star />
+                <Star />
+              </span>
+              <span>
+                <strong className="font-semibold text-slate-900">4.9 / 5</strong>{" "}
+                <span className="text-slate-500">from 1,200+ writers</span>
+              </span>
+            </span>
+            <p className="max-w-[32ch] text-sm leading-relaxed text-slate-600 sm:text-right">
+              Discover why people love using AlphaWrite to enhance their learning and work.
+            </p>
+          </div>
         </div>
 
-        {/* Testimonial grid — stepped left borders (|  |    |) */}
-        <div className="mt-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t, i) => {
-            const col = i % 3;
-            const stepClass = col === 0 ? "lg:ml-0" : col === 1 ? "lg:ml-8" : "lg:ml-16";
-            return (
-            <div
+        {/* Testimonial grid — soft cards w/ serif quote mark */}
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {testimonials.map((t, i) => (
+            <article
               key={`${t.author}-${i}`}
-              className={`relative border-l-2 border-violet-200/80 pl-6 ${stepClass}`}
+              className="relative flex flex-col rounded-3xl bg-white p-7 shadow-[0_0_0_1px_rgba(15,23,42,0.04),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_12px_32px_-16px_rgba(15,23,42,0.18),0_4px_8px_-4px_rgba(15,23,42,0.06)] transition-all duration-300 hover:shadow-[0_0_0_1px_rgba(139,92,246,0.18),0_1px_0_0_rgba(255,255,255,0.8)_inset,0_24px_48px_-20px_rgba(15,23,42,0.22),0_6px_12px_-4px_rgba(15,23,42,0.08)]"
             >
               <span
-                className="absolute -left-px top-0 text-4xl font-serif leading-none text-violet-200"
                 aria-hidden
+                className="absolute right-7 top-5 font-serif text-7xl leading-none text-violet-100"
               >
                 &ldquo;
               </span>
               <blockquote
-                className="relative pt-4 text-slate-700 italic leading-relaxed [&_strong]:font-semibold [&_strong]:text-[#8B5CF6] [&_strong]:not-italic"
+                className="relative flex-1 text-[15px] leading-relaxed text-slate-700 [&_strong]:font-semibold [&_strong]:text-slate-900"
                 dangerouslySetInnerHTML={{
                   __html: boldenQuote(t.quote, t.boldPhrases) + "&rdquo;",
                 }}
               />
-              <div className="mt-6 flex items-center gap-4">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-violet-100 to-violet-50 text-sm font-semibold text-[#8B5CF6] ring-2 ring-white">
+              <div className="mt-6 flex items-center gap-3 border-t border-slate-100 pt-5">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-sm font-bold text-white shadow-sm shadow-violet-500/30">
                   {t.author
                     .split(" ")
                     .map((n) => n[0])
-                    .join("")}
+                    .join("")
+                    .slice(0, 2)}
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">{t.author}</p>
-                  <p className="text-sm text-slate-500">{t.role}</p>
+                  <p className="text-[14px] font-semibold tracking-tight text-slate-900">
+                    {t.author}
+                  </p>
+                  <p className="text-[12px] text-slate-500">{t.role}</p>
                 </div>
               </div>
-            </div>
-            );
-          })}
+            </article>
+          ))}
         </div>
       </div>
     </section>
