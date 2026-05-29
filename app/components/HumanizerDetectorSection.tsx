@@ -163,7 +163,7 @@ export default function HumanizerDetectorSection() {
             <span className="text-sm font-semibold text-slate-700 sm:text-base">AI Humanizer & Detector</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex rounded-xl border border-slate-200/80 bg-white p-1 shadow-sm" role="tablist">
+            <div className="flex rounded-full border border-slate-200/80 bg-white p-1 shadow-sm" role="tablist">
               {(["humanizer", "detector"] as const).map((m) => (
                 <button
                   key={m}
@@ -171,7 +171,7 @@ export default function HumanizerDetectorSection() {
                   role="tab"
                   aria-selected={mode === m}
                   onClick={() => setMode(m)}
-                  className={`rounded-lg px-4 py-2.5 text-xs font-semibold transition-all duration-200 sm:text-sm ${
+                  className={`rounded-full px-4 py-2.5 text-xs font-semibold transition-all duration-200 sm:text-sm ${
                     mode === m
                       ? "bg-[#8B5CF6] text-white shadow-sm"
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
@@ -183,7 +183,7 @@ export default function HumanizerDetectorSection() {
               <button
                 type="button"
                 onClick={handleOpenWritingAssistant}
-                className="group flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-xs font-semibold text-slate-600 transition-all duration-200 hover:bg-slate-50 hover:text-[#8B5CF6] sm:text-sm"
+                className="group flex items-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-semibold text-slate-600 transition-all duration-200 hover:bg-slate-50 hover:text-[#8B5CF6] sm:text-sm"
                 aria-label="Open Writing Assistant"
               >
                 <Sparkles className="size-3.5" aria-hidden />
