@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useMemo, useRef } from "react";
-import { Search, Filter, Download, Mail, Send, X, ChevronDown, ImagePlus } from "lucide-react";
+import { Search, Filter, Download, Mail, Send, X, ChevronDown, ImagePlus, Eye, EyeOff } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
+import { formatEmailBody } from "@/services/modules/admin";
 import {
   useAdminUsers,
   useBulkEmail,
@@ -10,7 +11,6 @@ import {
   useUpdateUserPlan,
   useSendWelcomeEmail,
 } from "@/services/hooks/admin";
-import { adminApi } from "@/services/modules/admin";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
@@ -392,11 +392,16 @@ export default function AdminUsersPage() {
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">Body</label>
                   <textarea
-                    className="min-h-[100px] w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-[#8B5CF6] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/20"
+                    className="min-h-[140px] w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-[#8B5CF6] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/20"
+                    placeholder={"Type plain text — blank lines become paragraphs.\nUse **bold** and *italic* for emphasis.\nOr paste raw HTML and it'll be sent as-is."}
                     value={emailBody}
                     onChange={(e) => setEmailBody(e.target.value)}
                     required
                   />
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Plain text is auto-formatted into paragraphs. Paste HTML to send it untouched.
+                  </p>
+                  <EmailBodyPreview subject={emailSubject} body={emailBody} />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">Image <span className="text-slate-400 font-normal">(optional)</span></label>
@@ -490,14 +495,18 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Body (HTML)</label>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Body</label>
                   <textarea
-                    className="min-h-[100px] w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-[#8B5CF6] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/20"
-                    placeholder="<p>Your message here</p>"
+                    className="min-h-[140px] w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:border-[#8B5CF6] focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]/20"
+                    placeholder={"Type plain text — blank lines become paragraphs.\nUse **bold** and *italic* for emphasis.\nOr paste raw HTML and it'll be sent as-is."}
                     value={sendBody}
                     onChange={(e) => setSendBody(e.target.value)}
                     required
                   />
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Plain text is auto-formatted into paragraphs. Paste HTML to send it untouched.
+                  </p>
+                  <EmailBodyPreview subject={sendSubject} body={sendBody} />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">Image <span className="text-slate-400 font-normal">(optional)</span></label>
@@ -551,5 +560,41 @@ export default function AdminUsersPage() {
         )}
       </div>
     </AdminLayout>
+  );
+}
+
+function EmailBodyPreview({ subject, body }: { subject: string; body: string }) {
+  const [open, setOpen] = useState(false);
+  const hasContent = body.trim().length > 0;
+  const html = useMemo(() => formatEmailBody(body), [body]);
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        disabled={!hasContent}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {open ? <EyeOff className="size-3.5" aria-hidden /> : <Eye className="size-3.5" aria-hidden />}
+        {open ? "Hide preview" : "Preview email"}
+      </button>
+      {open && hasContent && (
+        <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 bg-slate-50/60 px-4 py-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+              Subject
+            </p>
+            <p className="mt-0.5 truncate text-sm font-medium text-slate-900">
+              {subject || <span className="text-slate-400">No subject</span>}
+            </p>
+          </div>
+          <div
+            className="px-5 py-4 text-[14px] leading-relaxed text-slate-700 [&_a]:text-[#8B5CF6] [&_a]:underline [&_em]:italic [&_h1]:my-3 [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-slate-900 [&_h2]:my-3 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-slate-900 [&_h3]:my-3 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-slate-900 [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-3 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_strong]:font-semibold [&_strong]:text-slate-900 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
