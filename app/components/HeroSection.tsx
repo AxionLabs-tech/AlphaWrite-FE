@@ -192,10 +192,10 @@ function HeroDeck() {
           </div>
         </div>
 
-        {/* Floating "Human written" score badge */}
+        {/* Floating "Human written" score badge — pulled in on mobile to avoid edge overflow */}
         <div
           aria-hidden
-          className="absolute -bottom-7 -left-7 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_0_0_1px_rgba(15,23,42,0.06),0_18px_36px_-12px_rgba(15,23,42,0.22)] sm:-bottom-6 sm:-left-6"
+          className="absolute bottom-3 left-3 flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_0_0_1px_rgba(15,23,42,0.06),0_18px_36px_-12px_rgba(15,23,42,0.22)] sm:-bottom-6 sm:-left-6"
         >
           <div className="relative flex size-11 items-center justify-center">
             <svg width="44" height="44" viewBox="0 0 44 44" className="absolute inset-0">
