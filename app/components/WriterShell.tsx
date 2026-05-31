@@ -201,7 +201,7 @@ export function WriterShell({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
+    <div className="flex h-dvh overflow-hidden bg-white">
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
@@ -230,7 +230,7 @@ export function WriterShell({
       )}
 
       {/* Main */}
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="relative flex flex-1 flex-col overflow-hidden">
         {/* Mobile open-sidebar button */}
         <button
           type="button"
