@@ -25,6 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import {
+  useAuthOptional,
   useChat,
   useChatStream,
   useConversation,
@@ -47,72 +48,27 @@ type ThreadMessage = ConversationMessage & { pending?: boolean };
 interface SuggestedPrompt {
   icon: React.ReactNode;
   title: string;
-  hint: string;
   prompt: string;
 }
 
-interface PromptGroup {
-  label: string;
-  prompts: SuggestedPrompt[];
-}
-
-const PROMPT_GROUPS: PromptGroup[] = [
+const SUGGESTED_PROMPTS: SuggestedPrompt[] = [
   {
-    label: "Draft",
-    prompts: [
-      {
-        icon: <SquarePen className="size-4" aria-hidden />,
-        title: "Marketing email",
-        hint: "200 words, warm tone",
-        prompt:
-          "Write a friendly 200-word marketing email introducing our new product to existing customers. Keep it warm and avoid jargon.",
-      },
-      {
-        icon: <MessageSquarePlus className="size-4" aria-hidden />,
-        title: "Blog post outline",
-        hint: "1,200 words, 5 sections",
-        prompt:
-          "Outline a 1,200-word blog post about staying focused while working from home. Include 5 H2 sections and a punchy intro.",
-      },
-    ],
+    icon: <SquarePen className="size-4" aria-hidden />,
+    title: "Write an essay on…",
+    prompt:
+      "Write a well-structured essay on the following topic. Include a clear thesis, 3–4 body paragraphs with evidence, and a concise conclusion.\n\nTopic: ",
   },
   {
-    label: "Polish",
-    prompts: [
-      {
-        icon: <Sparkles className="size-4" aria-hidden />,
-        title: "Improve a paragraph",
-        hint: "Tighten flow, keep meaning",
-        prompt:
-          "Polish this paragraph and improve flow without changing the meaning:\n\n",
-      },
-      {
-        icon: <Wand2 className="size-4" aria-hidden />,
-        title: "Match my style",
-        hint: "Rewrite in my voice",
-        prompt:
-          "Rewrite the following text to match my writing style, keeping the meaning intact:\n\n",
-      },
-    ],
+    icon: <Sparkles className="size-4" aria-hidden />,
+    title: "Polish a paragraph",
+    prompt:
+      "Polish this paragraph and improve flow without changing the meaning:\n\n",
   },
   {
-    label: "Brainstorm",
-    prompts: [
-      {
-        icon: <MessageSquarePlus className="size-4" aria-hidden />,
-        title: "Subject line variants",
-        hint: "5 punchy options",
-        prompt:
-          "Give me 5 punchy subject line options for an email about ",
-      },
-      {
-        icon: <Sparkles className="size-4" aria-hidden />,
-        title: "Counter-arguments",
-        hint: "Stress-test my thinking",
-        prompt:
-          "Play devil's advocate and give me 3 strong counter-arguments to this position:\n\n",
-      },
-    ],
+    icon: <MessageSquarePlus className="size-4" aria-hidden />,
+    title: "Outline an essay",
+    prompt:
+      "Help me outline an essay. Suggest a thesis, 3–5 main arguments, and a brief counterargument.\n\nTopic: ",
   },
 ];
 
@@ -157,6 +113,7 @@ export default function WritePage() {
   }, [useStyle]);
 
   // --- data hooks ---
+  const auth = useAuthOptional();
   const conversations = useConversations();
   const conversation = useConversation();
   const chat = useChat();
@@ -468,8 +425,9 @@ export default function WritePage() {
           {isEmpty ? (
             <EmptyState
               styleReady={styleReady}
-              groups={PROMPT_GROUPS}
+              prompts={SUGGESTED_PROMPTS}
               onSelectPrompt={usePrompt}
+              userName={auth?.user?.name || auth?.user?.email?.split("@")[0] || null}
             />
           ) : conversation.isLoading ? (
             <div className="flex h-full items-center justify-center">
@@ -493,15 +451,16 @@ export default function WritePage() {
         </div>
 
         {/* Composer */}
-        <div className="bg-gradient-to-b from-transparent to-white px-4 pb-5 pt-4 lg:px-8">
+        <div className="bg-gradient-to-b from-transparent via-white/80 to-white px-3 pt-4 lg:px-8 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <div className="mx-auto max-w-3xl">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 void handleSend();
               }}
-              className="group/composer relative rounded-2xl border border-slate-200 bg-white shadow-[0_4px_24px_-8px_rgba(15,23,42,0.10)] transition-all duration-200 focus-within:border-[#8B5CF6]/50 focus-within:shadow-[0_8px_32px_-8px_rgba(139,92,246,0.25)] focus-within:ring-4 focus-within:ring-[#8B5CF6]/10"
+              className="group/composer relative overflow-hidden rounded-[28px] bg-white shadow-[0_0_0_1px_rgba(15,23,42,0.06),0_10px_30px_-12px_rgba(15,23,42,0.12),0_4px_8px_-2px_rgba(15,23,42,0.06)] transition-all duration-300 focus-within:shadow-[0_0_0_1.5px_rgba(139,92,246,0.45),0_18px_40px_-12px_rgba(139,92,246,0.22),0_6px_14px_-4px_rgba(15,23,42,0.08)]"
             >
+              {/* Top: textarea */}
               <textarea
                 ref={textareaRef}
                 value={draft}
@@ -513,59 +472,74 @@ export default function WritePage() {
                   }
                 }}
                 rows={1}
-                placeholder={isBusy ? "Generating reply…" : "Message the writing assistant…"}
-                className="block max-h-[200px] min-h-[48px] w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                placeholder={isBusy ? "Generating reply…" : "Ask anything…"}
+                className="block max-h-[220px] min-h-[60px] w-full resize-none bg-transparent px-5 pt-4 pb-2 text-[15.5px] leading-relaxed text-slate-900 placeholder:text-slate-400 focus:outline-none"
                 disabled={isBusy && !chatStream.isStreaming}
               />
-              <div className="flex items-center gap-1 px-2 pb-2">
-                <IconToggle
+
+              {/* Bottom: tool chips + send */}
+              <div className="flex items-center gap-2 px-3 pb-3">
+                <ToolChip
                   active={useStyle}
                   onClick={() => setUseStyle((v) => !v)}
                   disabled={!styleReady}
-                  icon={<Wand2 className="size-3.5" aria-hidden />}
-                  label="Style"
+                  icon={<Wand2 className="size-4" aria-hidden />}
                   tooltip={styleReady ? "Use my writing style" : "Set up writing style first"}
                 />
-                <IconToggle
+                <ToolChip
                   active={streamEnabled}
                   onClick={() => setStreamEnabled((v) => !v)}
-                  icon={<Zap className="size-3.5" aria-hidden />}
-                  label="Stream"
-                  tooltip="Stream the reply as it generates"
+                  icon={<Zap className="size-4" aria-hidden />}
+                  tooltip="Stream replies as they generate"
                 />
-                <div className="ml-auto flex items-center gap-2">
-                  {draft.trim() && !chatStream.isStreaming && (
-                    <span className="hidden text-[10px] font-medium text-slate-400 sm:inline">
-                      <kbd className="rounded border border-slate-200 bg-slate-50 px-1 py-0.5 font-mono text-[9px] text-slate-500">↵</kbd>{" "}
-                      to send
-                    </span>
-                  )}
+
+                <div className="ml-auto">
                   {chatStream.isStreaming ? (
                     <button
                       type="button"
                       onClick={chatStream.abort}
-                      className="flex size-9 items-center justify-center rounded-xl bg-slate-900 text-white transition hover:bg-slate-800"
+                      className="group/stop flex h-10 items-center gap-2 rounded-full bg-slate-900 px-3 pr-4 text-[13px] font-semibold text-white shadow-lg shadow-slate-900/30 transition hover:bg-slate-800"
                       aria-label="Stop generating"
                     >
                       <StopCircle className="size-4" aria-hidden />
+                      Stop
                     </button>
                   ) : (
                     <button
                       type="submit"
                       disabled={!draft.trim() || isBusy}
-                      className="flex size-9 items-center justify-center rounded-xl bg-[#8B5CF6] text-white shadow-md shadow-violet-500/30 transition hover:bg-violet-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                      className="relative flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-[#8B5CF6] to-violet-600 text-white shadow-lg shadow-violet-500/40 transition-all duration-200 hover:scale-[1.04] hover:shadow-violet-500/50 active:scale-[0.96] disabled:cursor-not-allowed disabled:bg-slate-100 disabled:bg-none disabled:text-slate-300 disabled:shadow-none disabled:hover:scale-100"
                       aria-label="Send message"
                     >
                       {chat.isSending ? (
                         <Loader2 className="size-4 animate-spin" aria-hidden />
                       ) : (
-                        <ArrowUp className="size-4" aria-hidden />
+                        <ArrowUp className="size-[18px]" strokeWidth={2.5} aria-hidden />
                       )}
                     </button>
                   )}
                 </div>
               </div>
             </form>
+
+            {/* Subtle hint below — only on desktop, only when empty */}
+            {!draft.trim() && !chatStream.isStreaming && (
+              <p className="mt-2 hidden text-center text-[11px] text-slate-400 sm:block">
+                Press{" "}
+                <kbd className="rounded border border-slate-200 bg-white px-1 py-0.5 font-mono text-[10px] text-slate-500 shadow-sm">
+                  ↵
+                </kbd>{" "}
+                to send,{" "}
+                <kbd className="rounded border border-slate-200 bg-white px-1 py-0.5 font-mono text-[10px] text-slate-500 shadow-sm">
+                  Shift
+                </kbd>{" "}
+                +{" "}
+                <kbd className="rounded border border-slate-200 bg-white px-1 py-0.5 font-mono text-[10px] text-slate-500 shadow-sm">
+                  ↵
+                </kbd>{" "}
+                for new line
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -605,74 +579,77 @@ export default function WritePage() {
 
 function EmptyState({
   styleReady,
-  groups,
+  prompts,
   onSelectPrompt,
+  userName,
 }: {
   styleReady: boolean;
-  groups: PromptGroup[];
+  prompts: SuggestedPrompt[];
   onSelectPrompt: (p: string) => void;
+  userName: string | null;
 }) {
+  const greeting = (() => {
+    const hour = new Date().getHours();
+    if (hour < 5) return "Still up";
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    if (hour < 22) return "Good evening";
+    return "Late night";
+  })();
+  const firstName = userName?.split(/\s+/)[0] ?? null;
+
   return (
-    <div className="relative mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-6 py-12">
-      {/* Ambient halo behind the badge */}
-      <div className="pointer-events-none absolute left-1/2 top-[18%] -z-10 size-[420px] -translate-x-1/2 rounded-full bg-violet-300/25 blur-[100px]" />
-      <div className="pointer-events-none absolute left-1/2 top-[24%] -z-10 size-[260px] -translate-x-1/2 rounded-full bg-fuchsia-300/25 blur-[80px]" />
+    <div className="relative mx-auto flex h-full w-full max-w-2xl flex-col items-center justify-center px-6">
+      {/* Soft violet aura behind the headline */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 -z-10 size-[480px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-300/15 blur-[120px]"
+      />
 
       <div className="text-center">
-        <div className="relative inline-flex">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-xl shadow-violet-500/40">
-            <Sparkles className="size-6 text-white" aria-hidden />
-          </div>
-          <div className="absolute -inset-2 -z-10 rounded-3xl bg-gradient-to-br from-violet-300/40 to-fuchsia-300/40 blur-md" />
-        </div>
-        <h2 className="mt-6 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-          What should we write today?
-        </h2>
-        <p className="mt-2.5 max-w-md text-[15px] text-slate-500">
-          Ask for a draft, polish a piece, or brainstorm ideas. Replies stream in real time.
+        <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-slate-400">
+          {greeting}
+          {firstName ? `, ${firstName}` : ""}
         </p>
+        <h2 className="mt-3 text-balance text-[clamp(2rem,5vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.025em] text-slate-900">
+          What shall we{" "}
+          <span className="bg-gradient-to-r from-[#8B5CF6] via-violet-500 to-fuchsia-500 bg-clip-text font-serif italic text-transparent">
+            write
+          </span>
+          ?
+        </h2>
       </div>
 
-      <div className="mt-10 grid w-full gap-6 sm:grid-cols-3">
-        {groups.map((group) => (
-          <div key={group.label}>
-            <div className="mb-2.5 flex items-center gap-2 px-1">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
-                {group.label}
-              </span>
-              <span className="h-px flex-1 bg-slate-200/70" />
-            </div>
-            <div className="space-y-2">
-              {group.prompts.map((p) => (
-                <button
-                  key={p.title}
-                  type="button"
-                  onClick={() => onSelectPrompt(p.prompt)}
-                  className="group flex w-full items-start gap-2.5 rounded-xl border border-slate-200 bg-white/70 p-3 text-left backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md hover:shadow-violet-500/10"
-                >
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#8B5CF6] transition group-hover:bg-violet-100">
-                    {p.icon}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13px] font-semibold tracking-tight text-slate-800 group-hover:text-slate-900">
-                      {p.title}
-                    </div>
-                    <div className="truncate text-[11px] text-slate-500">{p.hint}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* Horizontal prompt chips */}
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+        {prompts.map((p) => (
+          <button
+            key={p.title}
+            type="button"
+            onClick={() => onSelectPrompt(p.prompt)}
+            className="group inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-3.5 py-2 text-[13px] font-medium text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:text-slate-900 hover:shadow-md hover:shadow-violet-500/15"
+          >
+            <span className="flex size-[18px] shrink-0 items-center justify-center text-[#8B5CF6] transition group-hover:scale-110">
+              {p.icon}
+            </span>
+            {p.title}
+          </button>
         ))}
       </div>
 
       {!styleReady && (
         <Link
           href="/settings/style"
-          className="mt-8 inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50/60 px-3.5 py-1.5 text-[12px] font-medium text-[#8B5CF6] backdrop-blur-sm transition hover:bg-violet-100"
+          className="group mt-8 inline-flex items-center gap-2 rounded-full border border-violet-200/80 bg-violet-50/80 px-4 py-2 text-[12px] font-medium text-violet-800 shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-100 hover:shadow-md hover:shadow-violet-500/20"
         >
-          <Wand2 className="size-3.5" aria-hidden />
-          Set up your writing style to personalize replies
+          <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#8B5CF6] transition group-hover:bg-white">
+            <Wand2 className="size-3" aria-hidden />
+          </span>
+          Personalize replies — set up your writing style
+          <ArrowUp
+            className="size-3 -rotate-90 text-violet-300 transition group-hover:translate-x-0.5 group-hover:text-[#8B5CF6]"
+            aria-hidden
+          />
         </Link>
       )}
     </div>
@@ -1146,19 +1123,17 @@ function ProbabilityBar({
   );
 }
 
-function IconToggle({
+function ToolChip({
   active,
   onClick,
   disabled,
   icon,
-  label,
   tooltip,
 }: {
   active: boolean;
   onClick: () => void;
   disabled?: boolean;
   icon: React.ReactNode;
-  label: string;
   tooltip: string;
 }) {
   return (
@@ -1169,16 +1144,15 @@ function IconToggle({
       title={tooltip}
       aria-pressed={active}
       aria-label={tooltip}
-      className={`flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium transition ${
+      className={`group/chip relative flex size-9 items-center justify-center rounded-full transition-all duration-200 ${
         disabled
-          ? "cursor-not-allowed text-slate-300"
+          ? "cursor-not-allowed bg-slate-50 text-slate-300"
           : active
-            ? "bg-violet-50 text-[#8B5CF6]"
-            : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+            ? "bg-gradient-to-br from-[#8B5CF6] to-violet-600 text-white shadow-md shadow-violet-500/40 hover:shadow-lg hover:shadow-violet-500/50"
+            : "bg-slate-100/70 text-slate-500 hover:bg-slate-200/70 hover:text-slate-700"
       }`}
     >
       {icon}
-      <span>{label}</span>
     </button>
   );
 }
