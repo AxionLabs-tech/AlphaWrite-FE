@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   CreditCard,
+  History,
   Home,
   LogOut,
   MessageSquare,
@@ -199,10 +200,11 @@ export function WriterShell({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   return (
     <div className="flex h-dvh overflow-hidden bg-white">
-      {/* Mobile backdrop */}
+      {/* Mobile backdrop for left sidebar */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm lg:hidden"
@@ -219,7 +221,7 @@ export function WriterShell({
         <AccountSidebar onClose={() => setSidebarOpen(false)} />
       </aside>
 
-      {/* Middle column (optional) */}
+      {/* Middle column — desktop (md+) */}
       {middleColumn && (
         <aside
           className="hidden w-72 flex-col border-r border-slate-200 bg-slate-50/40 md:flex"
@@ -229,17 +231,65 @@ export function WriterShell({
         </aside>
       )}
 
+      {/* Mobile backdrop for history sheet */}
+      {middleColumn && historyOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-sm md:hidden"
+          onClick={() => setHistoryOpen(false)}
+        />
+      )}
+
+      {/* Middle column — mobile slide-in sheet from the right */}
+      {middleColumn && (
+        <aside
+          className={`fixed inset-y-0 right-0 z-40 flex w-[88vw] max-w-[340px] flex-col border-l border-slate-200 bg-slate-50/95 backdrop-blur transition-transform md:hidden ${
+            historyOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+          aria-label={middleColumnLabel ?? "Sidebar"}
+          onClick={(e) => {
+            // Close the sheet when the user picks something from the list
+            // (any button or link), except buttons marked to keep it open
+            // (e.g. inline delete trash icons).
+            const target = (e.target as HTMLElement).closest("button, a");
+            if (target && !target.hasAttribute("data-keep-sheet-open")) {
+              setHistoryOpen(false);
+            }
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setHistoryOpen(false)}
+            className="absolute right-3 top-3 z-10 rounded-md p-1.5 text-slate-500 hover:bg-slate-200/70"
+            aria-label="Close history"
+          >
+            <X className="size-4" aria-hidden />
+          </button>
+          {middleColumn}
+        </aside>
+      )}
+
       {/* Main */}
       <main className="relative flex flex-1 flex-col overflow-hidden">
-        {/* Mobile open-sidebar button */}
+        {/* Mobile open-sidebar button — top left */}
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="absolute left-3 top-3 z-10 rounded-md p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
+          className="absolute left-3 top-3 z-20 rounded-md p-2 text-slate-500 hover:bg-slate-100 lg:hidden"
           aria-label="Open menu"
         >
           <Menu className="size-4" aria-hidden />
         </button>
+        {/* Mobile open-history button — top right (only when there is a middle column) */}
+        {middleColumn && (
+          <button
+            type="button"
+            onClick={() => setHistoryOpen(true)}
+            className="absolute right-3 top-3 z-20 rounded-md p-2 text-slate-500 hover:bg-slate-100 md:hidden"
+            aria-label="Open history"
+          >
+            <History className="size-4" aria-hidden />
+          </button>
+        )}
         {children}
       </main>
     </div>

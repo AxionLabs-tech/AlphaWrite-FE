@@ -342,7 +342,8 @@ export default function WritePage() {
                   <button
                     type="button"
                     onClick={() => setDeleteTargetId(c.id)}
-                    className="absolute right-2 top-3.5 rounded-md p-1.5 text-slate-400 opacity-0 transition hover:bg-red-50 hover:text-red-600 focus:opacity-100 group-hover:opacity-100"
+                    data-keep-sheet-open
+                    className="absolute right-2 top-3.5 rounded-md p-1.5 text-slate-400 opacity-100 transition hover:bg-red-50 hover:text-red-600 focus:opacity-100 group-hover:opacity-100 md:opacity-0"
                     aria-label="Delete conversation"
                   >
                     <Trash2 className="size-3.5" aria-hidden />
@@ -366,7 +367,7 @@ export default function WritePage() {
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-violet-50/40 to-transparent" />
         {/* Header — only renders for active conversations */}
         {activeId && (
-          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-100/80 bg-white/70 px-4 py-3 backdrop-blur-xl pl-14 lg:pl-6 lg:px-8">
+          <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-100/80 bg-white/70 px-4 py-3 backdrop-blur-xl pl-14 pr-14 md:pr-4 lg:pl-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/40">
                 <Sparkles className="size-4 text-white" aria-hidden />
