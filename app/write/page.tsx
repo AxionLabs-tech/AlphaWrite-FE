@@ -363,7 +363,7 @@ export default function WritePage() {
 
   return (
     <WriterShell middleColumn={middleColumn} middleColumnLabel="Chat history">
-      <section className="relative flex flex-1 flex-col bg-gradient-to-b from-slate-50/40 via-white to-white">
+      <section className="relative flex min-h-0 flex-1 flex-col bg-gradient-to-b from-slate-50/40 via-white to-white">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-violet-50/40 to-transparent" />
         {/* Header — only renders for active conversations */}
         {activeId && (
@@ -420,7 +420,7 @@ export default function WritePage() {
         {/* Thread */}
         <div
           ref={threadRef}
-          className="flex-1 overflow-y-auto"
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
           aria-live="polite"
         >
           {isEmpty ? (
