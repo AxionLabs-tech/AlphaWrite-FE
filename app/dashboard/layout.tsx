@@ -3,11 +3,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthOptional } from "@/services/hooks";
-import LandingNav from "@/app/components/LandingNav";
-import Footer from "@/app/components/Footer";
 import { Skeleton } from "@/app/components/Skeleton";
+import DashboardShell from "@/app/components/DashboardShell";
 
-function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const auth = useAuthOptional();
 
@@ -17,40 +16,20 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     }
   }, [auth, router]);
 
+  useEffect(() => {
+    document.documentElement.classList.add("dash-viewport-lock");
+    return () => document.documentElement.classList.remove("dash-viewport-lock");
+  }, []);
+
   if (auth?.isLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-slate-50 via-violet-50/70 to-violet-100/80">
-        <LandingNav />
-        <main className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-          <Skeleton className="h-9 w-48" />
-          <Skeleton className="mt-1 h-4 w-96" />
-          <div className="mt-10 space-y-6">
-            <Skeleton className="h-40 w-full rounded-2xl" />
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Skeleton className="h-52 rounded-2xl" />
-              <Skeleton className="h-52 rounded-2xl" />
-            </div>
-          </div>
-        </main>
+      <div className="flex h-screen items-center justify-center bg-white">
+        <Skeleton className="h-9 w-48" />
       </div>
     );
   }
 
-  if (!auth?.isAuthenticated) {
-    return null;
-  }
+  if (!auth?.isAuthenticated) return null;
 
-  return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-violet-50/70 to-violet-100/80 text-slate-900">
-      <LandingNav />
-      <main className="min-h-screen">
-        {children}
-        <Footer />
-      </main>
-    </div>
-  );
-}
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <DashboardLayoutInner>{children}</DashboardLayoutInner>;
+  return <DashboardShell>{children}</DashboardShell>;
 }

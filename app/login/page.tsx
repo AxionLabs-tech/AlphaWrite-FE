@@ -56,7 +56,7 @@ function LoginContent() {
         } catch {
           // ignore
         }
-        router.push("/");
+        router.push("/dashboard");
       })
       .catch(() => {
         if (cancelled) return;

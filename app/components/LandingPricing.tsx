@@ -15,6 +15,8 @@ export interface CheckoutPayload {
 }
 
 // --- Plan data (single source of truth: limits + prices + copy) ---
+type Feature = { label: string; soon?: boolean };
+
 interface PlanData {
   id: PlanId;
   name: string;
@@ -31,14 +33,14 @@ interface PlanData {
   wordsPerRequest: number;
   creditsPerPeriod: number;
   dailyRequests: number;
-  features: string[];
+  features: Feature[];
 }
 
 const PLANS: PlanData[] = [
   {
     id: "free",
     name: "Free",
-    tagline: "Good for trying the product.",
+    tagline: "Try the product. Keep up with the roadmap.",
     priceUsd: null,
     priceCad: null,
     interval: null,
@@ -51,15 +53,17 @@ const PLANS: PlanData[] = [
     creditsPerPeriod: 200,
     dailyRequests: 1,
     features: [
-      "200 words per request",
-      "200 words per period",
-      "1 request per day",
+      { label: "Humanize up to 200 words per request" },
+      { label: "1 request per day" },
+      { label: "Unlimited AI detection" },
+      { label: "1 study document", soon: true },
+      { label: "20 flashcards per month", soon: true },
     ],
   },
   {
     id: "basic",
     name: "Basic",
-    tagline: "For students and casual writers.",
+    tagline: "Essay-writing basics for everyday coursework.",
     priceUsd: 5.99,
     priceCad: 8.15,
     interval: "weekly",
@@ -72,17 +76,18 @@ const PLANS: PlanData[] = [
     creditsPerPeriod: 10_000,
     dailyRequests: 10,
     features: [
-      "500 words per request",
-      "10,000 words per period",
-      "10 requests per day",
-      "Bypass AI detectors",
-      "Basic Humanization Engine",
+      { label: "500 words per humanize request" },
+      { label: "10,000 words/week" },
+      { label: "10 requests per day" },
+      { label: "Multi-detector check (6 engines)" },
+      { label: "5 study documents", soon: true },
+      { label: "100 flashcards per month", soon: true },
     ],
   },
   {
     id: "pro",
     name: "Pro",
-    tagline: "For authors, educators, marketers, and learners.",
+    tagline: "The full study loop. Our recommended plan.",
     priceUsd: 15.99,
     priceCad: 21.75,
     interval: null,
@@ -95,20 +100,20 @@ const PLANS: PlanData[] = [
     creditsPerPeriod: 20_000,
     dailyRequests: 20,
     features: [
-      "2,000 words per request",
-      "20,000 words per period",
-      "20 requests per day",
-      "Advanced AI detection & humanizing",
-      "20 languages",
-      "Plagiarism-free, error-free rewriting",
-      "Unlimited AI detection",
-      "Standard support",
+      { label: "2,000 words per humanize request" },
+      { label: "20,000 words/month" },
+      { label: "Advanced humanizer + 20 languages" },
+      { label: "Unlimited AI detection" },
+      { label: "AI Study Assistant with cited answers", soon: true },
+      { label: "Unlimited flashcards & practice quizzes", soon: true },
+      { label: "Up to 50 study documents", soon: true },
+      { label: "Standard support" },
     ],
   },
   {
     id: "premium",
     name: "Premium",
-    tagline: "For power users.",
+    tagline: "Serious exams, serious prep.",
     priceUsd: 30.99,
     priceCad: 42.15,
     interval: null,
@@ -121,14 +126,13 @@ const PLANS: PlanData[] = [
     creditsPerPeriod: 40_000,
     dailyRequests: 20,
     features: [
-      "4,000 words per request",
-      "40,000 words per period",
-      "20 requests per day",
-      "Advanced Turnitin Bypass",
-      "Priority support",
-      "Everything in Pro",
-      "Fastest processing",
-      "Undetectable results",
+      { label: "Everything in Pro" },
+      { label: "4,000 words per humanize request" },
+      { label: "40,000 words/month" },
+      { label: "Personalized exam prep plan", soon: true },
+      { label: "Daily study loop with spaced repetition", soon: true },
+      { label: "Unlimited study documents", soon: true },
+      { label: "Fastest processing + priority support" },
     ],
   },
 ];
@@ -204,10 +208,18 @@ export default function LandingPricing() {
             Pricing
           </span>
           <h2 className="mt-4 text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-slate-900">
-            Simple, transparent pricing.
+            Writing tools today.{" "}
+            <span
+              style={{ fontFamily: "var(--font-fraunces-raw)" }}
+              className="font-serif italic text-[#6642B6]"
+            >
+              Study tools next.
+            </span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-slate-600">
-            Choose the plan that fits your needs. Limits match what the product enforces.
+            Subscribe now and lock in access to the AI Study Assistant,
+            Flashcards and Exam Prep features at no price change when they
+            ship.
           </p>
         </header>
 
@@ -344,7 +356,7 @@ export default function LandingPricing() {
 
                 {plan.id === "free" ? (
                   <Link
-                    href="/#humanizer"
+                    href="/dashboard"
                     className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3.5 text-[15px] font-semibold text-slate-800 shadow-[0_0_0_1px_rgba(226,232,240,1),0_1px_2px_rgba(15,23,42,0.04)] transition hover:shadow-[0_0_0_1px_rgba(203,213,225,1),0_4px_10px_-2px_rgba(15,23,42,0.08)]"
                   >
                     Get started free
@@ -371,7 +383,7 @@ export default function LandingPricing() {
                 <ul className="space-y-3">
                   {plan.features.map((f) => (
                     <li
-                      key={f}
+                      key={f.label}
                       className={`flex items-start gap-2.5 text-[13.5px] leading-relaxed ${
                         isPopular ? "text-slate-200" : "text-slate-600"
                       }`}
@@ -385,7 +397,20 @@ export default function LandingPricing() {
                       >
                         <Check className="size-2.5" strokeWidth={3} aria-hidden />
                       </span>
-                      {f}
+                      <span className="flex-1">
+                        {f.label}
+                        {f.soon && (
+                          <span
+                            className={`ml-1.5 inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                              isPopular
+                                ? "bg-amber-400/20 text-amber-200"
+                                : "bg-amber-50 text-amber-700"
+                            }`}
+                          >
+                            Soon
+                          </span>
+                        )}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -395,11 +420,17 @@ export default function LandingPricing() {
         </div>
 
         <div className="mt-10 flex flex-col items-center gap-1 text-center text-sm text-slate-600">
-          <p>No credit card required for Free. Cancel anytime on paid plans.</p>
           <p>
-            Need a custom plan?{" "}
+            Features marked{" "}
+            <span className="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700">
+              Soon
+            </span>{" "}
+            unlock as they ship — no price change for existing subscribers.
+          </p>
+          <p>
+            No credit card required for Free · Cancel anytime on paid plans ·{" "}
             <Link href="#cta" className="font-medium text-[#8B5CF6] hover:underline">
-              Contact our sales team
+              Need a custom plan?
             </Link>
           </p>
         </div>

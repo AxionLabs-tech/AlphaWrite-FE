@@ -27,14 +27,24 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-8">
           {/* Brand column */}
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block transition hover:opacity-80">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2.5 transition hover:opacity-80"
+              aria-label="AlphaWrite home"
+            >
               <Image
-                src="/alphawrites.png"
-                alt="AlphaWrite"
-                width={120}
-                height={90}
-                className="h-16 w-auto"
+                src="/applogo.png"
+                alt=""
+                width={40}
+                height={40}
+                className="h-9 w-auto"
               />
+              <span
+                style={{ fontFamily: "var(--font-fraunces-raw)" }}
+                className="bg-gradient-to-r from-violet-700 to-fuchsia-600 bg-clip-text text-2xl font-semibold tracking-tight text-transparent"
+              >
+                AlphaWrite
+              </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-500">
               Write smarter. Sound human. AI humanization and detection tools for

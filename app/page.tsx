@@ -1,17 +1,15 @@
 import LandingNav from "./components/LandingNav";
 import HeroSection from "./components/HeroSection";
-import AccountSummaryCard from "./components/AccountSummaryCard";
-import HumanizerDetectorSection from "./components/HumanizerDetectorSection";
-import HowItWorks from "./components/HowItWorks";
-
+import PillarsSection from "./components/PillarsSection";
+import StudyFlow from "./components/StudyFlow";
 import BeforeAfter from "./components/BeforeAfter";
+import BypassDetectors from "./components/BypassDetectors";
+import TrustedByUniversities from "./components/Trusted";
 import Testimonials from "./components/Testimonials";
 import LandingPricing from "./components/LandingPricing";
 import FAQ from "./components/FAQ";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
-import TrustedByUniversities from "./components/Trusted";
-import BypassDetectors from "./components/BypassDetectors";
 
 export default function Home() {
   return (
@@ -19,13 +17,12 @@ export default function Home() {
       <LandingNav />
       <main>
         <HeroSection />
-        <AccountSummaryCard />
-        <HumanizerDetectorSection />
+        <PillarsSection />
+        <StudyFlow />
+        {/* Academic Writing deep-dive: our shipped strength */}
+        <BeforeAfter />
         <BypassDetectors />
         <TrustedByUniversities />
-        <HowItWorks />
-        <BeforeAfter />
-
         <Testimonials />
         <LandingPricing />
         <FAQ />

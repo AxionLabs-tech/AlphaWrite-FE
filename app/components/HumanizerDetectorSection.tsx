@@ -26,7 +26,7 @@ export default function HumanizerDetectorSection() {
       openAuthModal();
       return;
     }
-    router.push("/write");
+    router.push("/dashboard/write");
   }, [auth?.isAuthenticated, auth?.isLoading, openAuthModal, router]);
   const { paraphrase: paraphraseApi, isParaphrasing: isHumanizing, error: humanizeError, resetError: resetHumanizeError } = useParaphrase();
   const { detectAi: detectAiApi, isDetecting, error: detectError, resetError: resetDetectError } = useDetectAi();

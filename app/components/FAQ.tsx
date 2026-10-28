@@ -7,32 +7,32 @@ const faqs = [
   {
     question: "What is AlphaWrite?",
     answer:
-      "AlphaWrite is an AI-powered writing platform that includes both an AI Humanizer and an AI Detector. The Humanizer rewrites AI-generated text so it reads naturally and bypasses major AI detection tools, while the Detector scans text against multiple platforms in one click.",
+      "AlphaWrite is an AI study companion for students. It helps you understand your course materials, build flashcards and practice quizzes, prepare for exams, and polish the writing you turn in — all in one workspace.",
   },
   {
-    question: "How does the AI Humanizer work?",
+    question: "Which features are available today?",
     answer:
-      "Our Humanizer analyzes your AI-generated content and intelligently rewrites it to match natural human writing patterns. It preserves your original meaning and tone while adjusting sentence structure, vocabulary, and flow so the output reads authentically and passes AI detection checks.",
+      "Academic Writing is live: paraphraser, humanizer, grammar assistance, summarizer, and a multi-detector check against Turnitin, GPTZero, Copyleaks and more. The AI Study Assistant, Flashcards, and Exam Prep pillars are in active development — join the waitlist to be among the first in.",
   },
   {
-    question: "Which AI detectors does AlphaWrite bypass?",
+    question: "When will the Study Assistant, Flashcards and Exam Prep ship?",
     answer:
-      "AlphaWrite is designed to bypass all major AI detection platforms, including Turnitin, GPTZero, Originality.ai, Copyleaks, and more. Our multi-detector feature lets you check your text against several detectors simultaneously to ensure confidence in your results.",
+      "Study Workspace, AI Flashcards, and Practice Quizzes are our P0 priorities for the next release. The Daily Study Loop follows shortly after. We're building them in order — upload materials first, then understand, then test knowledge, then review weak areas on a schedule tied to your exam date.",
   },
   {
-    question: "Is the humanized content plagiarism-free?",
+    question: "Can AlphaWrite answer questions about my uploaded materials?",
     answer:
-      "Yes. AlphaWrite doesn't simply copy or paraphrase from existing sources — it generates unique rewrites of your content. The output is original text that maintains your intended meaning while being both plagiarism-free and undetectable by AI detectors.",
+      "Yes — when the Study Workspace ships. Answers will be grounded in the passages we retrieve from your documents and cite the pages they came from, so you can verify everything. Answers without source backing will be clearly flagged.",
+  },
+  {
+    question: "Is academic use of AlphaWrite allowed?",
+    answer:
+      "AlphaWrite is designed to help you learn, revise and improve your own writing — not to misrepresent authorship. Always follow your institution's policies on AI use and proper citation. Humanize and Detect are tools to help you understand how your writing reads; they're not a shortcut around academic integrity.",
   },
   {
     question: "Can I try AlphaWrite for free?",
     answer:
-      "Absolutely. Our Free plan gives you 200 words per request with 1 request per day — no credit card required. It's a great way to experience the Humanizer and Detector before upgrading to a paid plan for higher limits.",
-  },
-  {
-    question: "What happens if I exceed my plan's word limit?",
-    answer:
-      "If you reach your plan's word or request limit, you can upgrade to a higher tier at any time for increased capacity. Your existing content and settings are preserved when you switch plans. You can also cancel or change your plan at any time.",
+      "Yes. The Free plan gets you access to the Academic Writing tools with a daily request limit — no credit card required. Paid plans unlock higher limits and will include the new study features as they ship.",
   },
 ];
 
@@ -55,8 +55,8 @@ export default function FAQ() {
             Frequently asked questions.
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-slate-600">
-            Everything you need to know about AlphaWrite. Can&apos;t find the
-            answer you&apos;re looking for? Reach out to our support team.
+            What AlphaWrite is now, what&apos;s shipping next, and how to use it
+            without breaking your institution&apos;s rules.
           </p>
         </div>
 

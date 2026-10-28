@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Josefin_Sans, Geist_Mono, Playfair_Display, Fraunces } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { Providers } from "./components/Providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const josefinSans = Josefin_Sans({
+  variable: "--font-josefin-sans",
   subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -22,10 +23,16 @@ const playfair = Playfair_Display({
   style: ["italic"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces-raw",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "AlphaWrite – #1 AI Text Humanizer & Detector",
+  title: "AlphaWrite – Your AI Study Companion",
   description:
-    "AlphaWrite turns AI-drafted text into authentic, human-sounding content—built to pass any AI detection check effortlessly.",
+    "AlphaWrite is the AI study companion for students: understand your materials, build flashcards, prep for exams, and write essays that sound human.",
   keywords: [
     "AlphaWrite",
     "AI humanizer",
@@ -69,24 +76,24 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://alphawrite.ai",
     siteName: "AlphaWrite",
-    title: "AlphaWrite – #1 AI Text Humanizer & Detector",
+    title: "AlphaWrite – Your AI Study Companion",
     description:
-      "AlphaWrite turns AI-drafted text into authentic, human-sounding content—built to pass any AI detection check effortlessly.",
+      "AlphaWrite is the AI study companion for students: understand your materials, build flashcards, prep for exams, and write essays that sound human.",
     images: [
       {
-        url: "/alphawrites.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "AlphaWrite – #1 AI Text Humanizer & Detector",
+        alt: "AlphaWrite – Your AI Study Companion",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AlphaWrite – #1 AI Text Humanizer & Detector",
+    title: "AlphaWrite – Your AI Study Companion",
     description:
-      "AlphaWrite turns AI-drafted text into authentic, human-sounding content—built to pass any AI detection check effortlessly.",
-    images: ["/alphawrites.png"],
+      "AlphaWrite is the AI study companion for students: understand your materials, build flashcards, prep for exams, and write essays that sound human.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -115,7 +122,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Google Tag Manager */}
         <Script
@@ -146,7 +153,8 @@ gtag('config', 'G-127844YPY8');`,
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased`}
+        className={`${josefinSans.variable} ${geistMono.variable} ${playfair.variable} ${fraunces.variable} antialiased`}
+        suppressHydrationWarning
       >
         <noscript>
           <iframe

@@ -103,14 +103,22 @@ export default function LandingNav() {
           <Link
             href="/"
             className="flex shrink-0 items-center gap-2.5 transition hover:opacity-80"
+            aria-label="AlphaWrite home"
           >
             <Image
-              alt="AlphaWrite"
-              src="/alphawrites.png"
-              width={120}
-              height={90}
-              className="h-20 w-auto"
+              alt=""
+              src="/applogo.png"
+              width={48}
+              height={48}
+              priority
+              className="h-11 w-auto"
             />
+            <span
+              style={{ fontFamily: "var(--font-fraunces-raw)" }}
+              className="bg-gradient-to-r from-violet-700 to-fuchsia-600 bg-clip-text text-2xl font-semibold tracking-tight text-transparent"
+            >
+              AlphaWrite
+            </span>
           </Link>
 
           {/* Desktop nav */}

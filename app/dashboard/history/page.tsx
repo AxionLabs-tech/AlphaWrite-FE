@@ -27,18 +27,8 @@ function formatDate(iso: string): string {
   });
 }
 
-function buildRerunHref(item: QuickHistoryItem): string {
-  const q = new URLSearchParams({
-    topic: item.topic,
-    type: item.type,
-    tone: item.tone,
-    target_length: String(item.target_length),
-  });
-  if (item.additional_instructions) {
-    q.set("additional_instructions", item.additional_instructions);
-  }
-  if (item.style_fingerprint_used) q.set("use_style", "1");
-  return `/write/quick?${q.toString()}`;
+function buildRerunHref(_item: QuickHistoryItem): string {
+  return `/dashboard/humanize`;
 }
 
 export default function HistoryPage() {
@@ -76,7 +66,9 @@ export default function HistoryPage() {
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden px-4 py-4 sm:px-6 lg:px-8">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <div className="mx-auto max-w-5xl">
       <header className="border-l-4 border-[#8B5CF6] pl-4">
         <h1 className="bg-linear-to-r from-[#8B5CF6] to-violet-600 bg-clip-text text-2xl font-bold tracking-tight text-transparent sm:text-3xl">
           Generation history
@@ -109,7 +101,7 @@ export default function HistoryPage() {
               Quick generates you create will show up here.
             </p>
             <Link
-              href="/write/quick"
+              href="/dashboard/humanize"
               className="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 hover:bg-violet-600"
             >
               <Sparkles className="size-4" aria-hidden />
@@ -156,6 +148,8 @@ export default function HistoryPage() {
           </div>
         </div>
       )}
+      </div>
+      </div>
     </div>
   );
 }

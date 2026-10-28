@@ -56,7 +56,7 @@ function CallbackContent() {
             // ignore
           }
           setStatus("success");
-          router.replace("/");
+          router.replace("/dashboard");
         })
         .catch(() => {
           if (cancelled) return;

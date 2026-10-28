@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import {
   AlertCircle,
@@ -37,7 +38,7 @@ import {
 } from "@/services/hooks";
 import type { ConversationMessage } from "@/services/dtos/writing";
 import type { DetectAiResponse, ParaphraseResponse } from "@/services/dtos/ai";
-import { WriterShell, WriterTabs } from "@/app/components/WriterShell";
+import { WriterShell } from "@/app/components/WriterShell";
 import { MarkdownMessage } from "@/app/components/MarkdownMessage";
 
 const STREAM_PREF_KEY = "alphawrite.write.streamPreferred";
@@ -94,6 +95,7 @@ function formatRelative(iso: string): string {
 }
 
 export default function WritePage() {
+  const searchParams = useSearchParams();
   // --- preferences (persisted) ---
   const [streamEnabled, setStreamEnabled] = useState(true);
   const [useStyle, setUseStyle] = useState(false);
@@ -125,6 +127,11 @@ export default function WritePage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
   const [draft, setDraft] = useState("");
+
+  useEffect(() => {
+    const q = searchParams.get("q")?.trim();
+    if (q) setDraft(q);
+  }, [searchParams]);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const threadRef = useRef<HTMLDivElement>(null);
@@ -289,7 +296,6 @@ export default function WritePage() {
 
   const middleColumn = (
     <>
-      <WriterTabs active="chat" />
       <div className="flex items-center justify-between px-5 pb-3 pt-5">
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.08em] text-slate-500">
           Chat History
@@ -640,7 +646,7 @@ function EmptyState({
 
       {!styleReady && (
         <Link
-          href="/settings/style"
+          href="/dashboard/settings/style"
           className="group mt-8 inline-flex items-center gap-2 rounded-full border border-violet-200/80 bg-violet-50/80 px-4 py-2 text-[12px] font-medium text-violet-800 shadow-[0_1px_2px_rgba(15,23,42,0.04)] backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-100 hover:shadow-md hover:shadow-violet-500/20"
         >
           <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/80 text-[#8B5CF6] transition group-hover:bg-white">

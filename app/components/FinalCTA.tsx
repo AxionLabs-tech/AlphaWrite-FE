@@ -37,19 +37,20 @@ export default function FinalCTA() {
               </div>
 
               <h2 className="mt-7 text-balance text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-white">
-                Ready to write with confidence?
+                Ready to study with confidence?
               </h2>
               <p className="mx-auto mt-4 max-w-xl text-[17px] leading-relaxed text-white/85">
-                Join thousands of students who use AlphaWrite to rewrite, improve
-                originality, and polish essays in seconds.
+                Join thousands of students using AlphaWrite to understand their
+                materials, prep for exams, and submit writing that sounds like
+                them.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                 <Link
-                  href="/#humanizer"
+                  href="/dashboard"
                   className="group inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 text-[15px] font-semibold text-violet-700 shadow-[0_1px_0_0_rgba(255,255,255,0.6)_inset,0_10px_24px_-8px_rgba(0,0,0,0.3)] transition hover:bg-slate-50"
                 >
-                  Start free trial
+                  Start studying free
                   <ArrowRight
                     className="size-4 transition-transform group-hover:translate-x-0.5"
                     aria-hidden
@@ -80,7 +81,7 @@ export default function FinalCTA() {
           <div className="-mt-24 grid gap-4 px-4 sm:grid-cols-3 sm:gap-5 sm:px-12">
             {[
               { value: "50,000+", label: "Active users worldwide" },
-              { value: "10M+", label: "Words humanized" },
+              { value: "10M+", label: "Words studied & written" },
               { value: "4.9 / 5", label: "Average rating" },
             ].map((stat) => (
               <div
