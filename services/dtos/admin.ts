@@ -80,3 +80,18 @@ export interface AdminRequestsParams {
 export interface SendEmailResponse {
   message: string;
 }
+
+// ── System status ──
+
+export interface AdminSystemStatusResponse {
+  downtime: boolean;
+  banner: boolean;
+  message: string;
+  updated_at?: string;
+}
+
+export interface AdminSystemStatusUpdateBody {
+  downtime: boolean;
+  banner: boolean;
+  message: string;
+}

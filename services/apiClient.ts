@@ -10,6 +10,21 @@ export function setTokenGetter(getter: (() => string | null) | null): void {
   tokenGetter = getter;
 }
 
+let downtimeSignal: (() => boolean) | null = null;
+
+/**
+ * Register a getter that returns the current system-wide downtime state.
+ * When downtime is true, 5xx and network errors are flagged `silent` so
+ * call sites can skip toasts (the global DowntimeBanner already explains).
+ */
+export function setDowntimeSignal(getter: (() => boolean) | null): void {
+  downtimeSignal = getter;
+}
+
+function isDowntimeNow(): boolean {
+  return downtimeSignal?.() ?? false;
+}
+
 function getAuthHeaders(init?: RequestInit): HeadersInit {
   const token = tokenGetter?.() ?? null;
   const headers: Record<string, string> = {
@@ -35,13 +50,22 @@ export interface RequestConfig extends RequestInit {
 }
 
 export class ApiError extends Error {
+  /**
+   * When true, callers should skip user-facing toasts/snackbars for this
+   * error. Set automatically for 5xx and network errors during a known
+   * system-wide downtime window — the global DowntimeBanner is sufficient.
+   */
+  silent: boolean;
+
   constructor(
     message: string,
     public status: number,
-    public body?: unknown
+    public body?: unknown,
+    options?: { silent?: boolean }
   ) {
     super(message);
     this.name = "ApiError";
+    this.silent = options?.silent ?? false;
   }
 }
 
@@ -57,10 +81,33 @@ async function handleResponse<T>(res: Response): Promise<T> {
       if (typeof b.message === "string") message = b.message;
       else if (typeof b.detail === "string") message = b.detail;
     }
-    throw new ApiError(message, res.status, body);
+    const silent = res.status >= 500 && isDowntimeNow();
+    throw new ApiError(message, res.status, body, { silent });
   }
 
   return body as T;
+}
+
+/**
+ * Shared send helper: every verb routes through here so network errors are
+ * normalized into ApiError, and both 5xx and network failures are tagged
+ * `silent` during a known downtime window. AbortError passes through
+ * untouched so caller-driven cancellation isn't masked.
+ */
+async function sendRequest<T>(doFetch: () => Promise<Response>): Promise<T> {
+  let res: Response;
+  try {
+    res = await doFetch();
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    throw new ApiError(
+      e instanceof Error ? e.message : "Network error",
+      0,
+      undefined,
+      { silent: isDowntimeNow() }
+    );
+  }
+  return handleResponse<T>(res);
 }
 
 /**
@@ -73,13 +120,14 @@ export async function get<T>(path: string, config: RequestConfig = {}): Promise<
   if (params) {
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   }
-  const res = await fetch(url.toString(), {
-    ...init,
-    method: "GET",
-    headers: getAuthHeaders(init),
-    credentials: "include",
-  });
-  return handleResponse<T>(res);
+  return sendRequest<T>(() =>
+    fetch(url.toString(), {
+      ...init,
+      method: "GET",
+      headers: getAuthHeaders(init),
+      credentials: "include",
+    })
+  );
 }
 
 /**
@@ -92,14 +140,15 @@ export async function post<T, B = unknown>(
 ): Promise<T> {
   const base = getBaseUrl();
   const url = `${base}${path}`;
-  const res = await fetch(url, {
-    ...config,
-    method: "POST",
-    headers: getAuthHeaders(config),
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-    credentials: "include",
-  });
-  return handleResponse<T>(res);
+  return sendRequest<T>(() =>
+    fetch(url, {
+      ...config,
+      method: "POST",
+      headers: getAuthHeaders(config),
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      credentials: "include",
+    })
+  );
 }
 
 /**
@@ -112,14 +161,15 @@ export async function put<T, B = unknown>(
 ): Promise<T> {
   const base = getBaseUrl();
   const url = `${base}${path}`;
-  const res = await fetch(url, {
-    ...config,
-    method: "PUT",
-    headers: getAuthHeaders(config),
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-    credentials: "include",
-  });
-  return handleResponse<T>(res);
+  return sendRequest<T>(() =>
+    fetch(url, {
+      ...config,
+      method: "PUT",
+      headers: getAuthHeaders(config),
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      credentials: "include",
+    })
+  );
 }
 
 /**
@@ -132,14 +182,15 @@ export async function patch<T, B = unknown>(
 ): Promise<T> {
   const base = getBaseUrl();
   const url = `${base}${path}`;
-  const res = await fetch(url, {
-    ...config,
-    method: "PATCH",
-    headers: getAuthHeaders(config),
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-    credentials: "include",
-  });
-  return handleResponse<T>(res);
+  return sendRequest<T>(() =>
+    fetch(url, {
+      ...config,
+      method: "PATCH",
+      headers: getAuthHeaders(config),
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      credentials: "include",
+    })
+  );
 }
 
 /**
@@ -148,13 +199,14 @@ export async function patch<T, B = unknown>(
 export async function del<T>(path: string, config: RequestConfig = {}): Promise<T> {
   const base = getBaseUrl();
   const url = `${base}${path}`;
-  const res = await fetch(url, {
-    ...config,
-    method: "DELETE",
-    headers: getAuthHeaders(config),
-    credentials: "include",
-  });
-  return handleResponse<T>(res);
+  return sendRequest<T>(() =>
+    fetch(url, {
+      ...config,
+      method: "DELETE",
+      headers: getAuthHeaders(config),
+      credentials: "include",
+    })
+  );
 }
 
 /**

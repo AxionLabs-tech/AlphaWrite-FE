@@ -5,7 +5,7 @@
  */
 
 import { post } from "../apiClient";
-import { adminGet, adminPost, adminPostForm } from "../adminApiClient";
+import { adminGet, adminPost, adminPut, adminPostForm } from "../adminApiClient";
 import type {
   AdminLoginBody,
   AdminLoginResponse,
@@ -13,6 +13,8 @@ import type {
   AdminVerifyRecoveryBody,
   AdminAuthResponse,
   AdminStatsResponse,
+  AdminSystemStatusResponse,
+  AdminSystemStatusUpdateBody,
   AdminUser,
   AdminUsersParams,
   SendEmailResponse,
@@ -146,6 +148,21 @@ export async function updateSubscriptions(): Promise<unknown> {
   return adminPost(`${ADMIN}/update-subscriptions`);
 }
 
+// ── System status ──
+
+export async function getSystemStatus(): Promise<AdminSystemStatusResponse> {
+  return adminGet<AdminSystemStatusResponse>(`${ADMIN}/system-status`);
+}
+
+export async function updateSystemStatus(
+  body: AdminSystemStatusUpdateBody
+): Promise<AdminSystemStatusResponse> {
+  return adminPut<AdminSystemStatusResponse, AdminSystemStatusUpdateBody>(
+    `${ADMIN}/system-status`,
+    body
+  );
+}
+
 export const adminApi = {
   adminLogin,
   adminVerifyTotp,
@@ -160,4 +177,6 @@ export const adminApi = {
   sendWelcomeEmail,
   updateCredits,
   updateSubscriptions,
+  getSystemStatus,
+  updateSystemStatus,
 };
