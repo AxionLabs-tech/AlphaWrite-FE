@@ -12,7 +12,7 @@ import {
 import { buildUrl, setDowntimeSignal } from "@/services/apiClient";
 
 const POLL_INTERVAL_MS = 30_000;
-const STATUS_PATH = "/api/v1/system-status";
+const STATUS_PATH = "/system-status";
 
 type SystemStatusResponse = {
   downtime?: boolean;
