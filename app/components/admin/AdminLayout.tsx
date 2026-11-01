@@ -12,6 +12,7 @@ import {
   Home,
   Shield,
   Menu,
+  Wrench,
   X,
   UserCheck,
 } from "lucide-react";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+  { href: "/admin/maintenance", label: "Maintenance", icon: Wrench },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

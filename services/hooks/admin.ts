@@ -10,6 +10,8 @@ import type {
   AdminVerifyRecoveryBody,
   AdminAuthResponse,
   AdminStatsResponse,
+  AdminSystemStatusResponse,
+  AdminSystemStatusUpdateBody,
   AdminUser,
   AdminUsersParams,
 } from "../dtos/admin";
@@ -350,4 +352,64 @@ export function useAdminUsers(params?: AdminUsersParams): UseAdminUsersResult {
   }, [fetchUsers]);
 
   return { data, isLoading, error, refetch: fetchUsers, resetError: useCallback(() => setError(null), []) };
+}
+
+// ── System status ──
+
+export interface UseAdminSystemStatusResult {
+  data: AdminSystemStatusResponse | null;
+  isLoading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+export function useAdminSystemStatus(): UseAdminSystemStatusResult {
+  const [data, setData] = useState<AdminSystemStatusResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStatus = useCallback(async () => {
+    setError(null);
+    try {
+      const res = await adminApi.getSystemStatus();
+      setData(res);
+    } catch (e) {
+      setError(getErrorMessage(e, "Failed to load system status."));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchStatus();
+  }, [fetchStatus]);
+
+  return { data, isLoading, error, refetch: fetchStatus };
+}
+
+export interface UseUpdateSystemStatusResult {
+  updateStatus: (body: AdminSystemStatusUpdateBody) => Promise<AdminSystemStatusResponse | null>;
+  isLoading: boolean;
+  error: string | null;
+  resetError: () => void;
+}
+
+export function useUpdateSystemStatus(): UseUpdateSystemStatusResult {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateStatus = useCallback(async (body: AdminSystemStatusUpdateBody) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      return await adminApi.updateSystemStatus(body);
+    } catch (e) {
+      setError(getErrorMessage(e, "Failed to update system status."));
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { updateStatus, isLoading, error, resetError: useCallback(() => setError(null), []) };
 }
