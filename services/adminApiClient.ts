@@ -81,6 +81,18 @@ export async function adminPost<T, B = unknown>(path: string, body?: B): Promise
   return handleResponse<T>(res);
 }
 
+export async function adminPut<T, B = unknown>(path: string, body?: B): Promise<T> {
+  const base = getBaseUrl();
+  const url = `${base}${path}`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: getAdminAuthHeaders(),
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+    credentials: "include",
+  });
+  return handleResponse<T>(res);
+}
+
 export async function adminPostForm<T>(path: string, formData: FormData): Promise<T> {
   const base = getBaseUrl();
   const url = `${base}${path}`;
